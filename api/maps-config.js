@@ -1,4 +1,4 @@
-export default function handler(req, res) {
+module.exports = function handler(req, res) {
   const apiKey = process.env.GOOGLE_MAPS_API_KEY;
 
   if (!apiKey || apiKey === 'YOUR_API_KEY_HERE') {
@@ -12,4 +12,4 @@ export default function handler(req, res) {
   res.setHeader('X-Frame-Options', 'DENY');
 
   res.status(200).json({ apiKey });
-}
+};
