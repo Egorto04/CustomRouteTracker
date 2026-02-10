@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#1e293b">
   <title>Custom Route Timer</title>
   <style>
     /* ========== Reset & Base ========== */
@@ -306,17 +309,202 @@
       text-align: center;
     }
 
-    /* ========== Responsive ========== */
+    /* ========== Mobile Toggle Button ========== */
+    .mobile-panel-toggle {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      background: #0284c7;
+      color: #fff;
+      border: none;
+      border-radius: 24px;
+      padding: 12px 24px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .mobile-panel-toggle:active {
+      transform: translateX(-50%) scale(0.95);
+    }
+    .mobile-panel-toggle .toggle-time {
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ========== Responsive — Mobile ========== */
     @media (max-width: 768px) {
-      .main-container { flex-direction: column; }
-      .sidebar {
-        width: 100%;
-        max-height: 45vh;
-        border-right: none;
-        border-bottom: 1px solid #334155;
+      body { height: 100dvh; } /* dynamic viewport height for mobile browsers */
+
+      header {
+        padding: 8px 12px;
+        gap: 8px;
       }
-      .time-remaining { font-size: 2.2rem; }
-      header { padding: 10px 16px; }
+      header h1 {
+        font-size: 1rem;
+      }
+
+      .controls {
+        gap: 6px;
+        width: 100%;
+        justify-content: flex-start;
+      }
+      .controls select, .controls button {
+        padding: 8px 10px;
+        font-size: 0.78rem;
+        border-radius: 6px;
+        min-height: 38px; /* touch-friendly */
+      }
+      /* Hide text labels on smallest screens, keep emojis */
+      .controls .btn-primary,
+      .controls .btn-danger,
+      .controls .btn-location {
+        padding: 8px 10px;
+      }
+      .refresh-badge {
+        display: none !important; /* save space, show in panel instead */
+      }
+
+      /* Layout: map fills screen, sidebar becomes bottom sheet */
+      .main-container {
+        flex-direction: column-reverse;
+        position: relative;
+      }
+
+      #map {
+        flex: 1;
+        min-height: 0;
+        height: 100%;
+      }
+
+      .sidebar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        min-width: 0;
+        max-height: 65dvh;
+        border-right: none;
+        border-top: 2px solid #475569;
+        border-radius: 20px 20px 0 0;
+        padding: 12px 16px 24px;
+        gap: 12px;
+        z-index: 50;
+        transform: translateY(100%);
+        transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 -8px 30px rgba(0,0,0,0.5);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      .sidebar.open {
+        transform: translateY(0);
+      }
+
+      /* Drag handle at top of sheet */
+      .sidebar::before {
+        content: '';
+        display: block;
+        width: 40px;
+        height: 4px;
+        background: #475569;
+        border-radius: 4px;
+        margin: 0 auto 10px;
+        flex-shrink: 0;
+      }
+
+      /* Show floating toggle button on mobile */
+      .mobile-panel-toggle {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      /* Time card — compact on mobile */
+      .time-card {
+        padding: 16px;
+        border-radius: 12px;
+      }
+      .time-remaining {
+        font-size: 2.4rem;
+      }
+      .time-card-label {
+        font-size: 0.6rem;
+      }
+      .time-remaining-sub {
+        font-size: 0.75rem;
+      }
+
+      /* Stats — tighter on mobile */
+      .stats-grid {
+        gap: 6px;
+      }
+      .stat-card {
+        padding: 10px;
+        border-radius: 8px;
+      }
+      .stat-value {
+        font-size: 1.1rem;
+      }
+      .stat-label {
+        font-size: 0.6rem;
+      }
+
+      /* Search — bigger touch target */
+      .search-container input {
+        padding: 12px 14px;
+        font-size: 1rem;
+        border-radius: 10px;
+      }
+
+      /* Waypoints — touch-friendly remove buttons */
+      .waypoint-item {
+        padding: 10px 12px;
+        font-size: 0.82rem;
+      }
+      .waypoint-remove {
+        font-size: 1.2rem;
+        padding: 4px 8px;
+        min-width: 32px;
+        min-height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Location card */
+      .location-card {
+        padding: 10px 12px;
+      }
+
+      /* Instructions */
+      .instructions {
+        padding: 12px;
+        font-size: 0.8rem;
+      }
+
+      /* Leg details */
+      .leg-details {
+        padding: 10px;
+      }
+    }
+
+    /* ========== Extra small phones (< 380px) ========== */
+    @media (max-width: 380px) {
+      header h1 { font-size: 0.9rem; }
+      .controls select, .controls button { font-size: 0.72rem; padding: 6px 8px; }
+      .time-remaining { font-size: 2rem; }
+      .stat-value { font-size: 1rem; }
+    }
+
+    /* ========== Landscape phone ========== */
+    @media (max-width: 768px) and (orientation: landscape) {
+      .sidebar {
+        max-height: 75dvh;
+      }
     }
 
     /* ========== Instructions ========== */
@@ -531,6 +719,12 @@
     <!-- Map -->
     <div id="map"></div>
   </div>
+
+  <!-- Mobile floating button -->
+  <button class="mobile-panel-toggle" id="mobile-toggle">
+    <span>📋</span>
+    <span class="toggle-time" id="toggle-time">Route Details</span>
+  </button>
 
   <script>
     // ==========================================
@@ -1198,6 +1392,39 @@
         removeWaypoint(index);
       }
     });
+
+    // ==========================================
+    // Mobile Panel Toggle
+    // ==========================================
+    const mobileToggle = document.getElementById('mobile-toggle');
+    const sidebar = document.querySelector('.sidebar');
+    let panelOpen = false;
+
+    mobileToggle.addEventListener('click', () => {
+      panelOpen = !panelOpen;
+      sidebar.classList.toggle('open', panelOpen);
+      mobileToggle.style.display = panelOpen ? 'none' : '';
+    });
+
+    // Close panel when tapping the map on mobile
+    document.getElementById('map').addEventListener('click', () => {
+      if (panelOpen && window.innerWidth <= 768) {
+        panelOpen = false;
+        sidebar.classList.remove('open');
+        mobileToggle.style.display = '';
+      }
+    });
+
+    // Update the floating button text with current remaining time
+    function updateMobileToggleText() {
+      const toggleTime = document.getElementById('toggle-time');
+      if (totalDurationSeconds > 0 && lastRouteUpdate) {
+        const elapsed = (Date.now() - lastRouteUpdate) / 1000;
+        const remaining = Math.max(0, totalDurationSeconds - elapsed);
+        toggleTime.textContent = formatCountdown(remaining) + ' remaining';
+      }
+    }
+    setInterval(updateMobileToggleText, 1000);
   </script>
 </body>
 </html>
