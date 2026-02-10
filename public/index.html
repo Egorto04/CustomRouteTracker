@@ -337,49 +337,55 @@
 
     /* ========== Responsive — Mobile ========== */
     @media (max-width: 768px) {
-      body { height: 100dvh; } /* dynamic viewport height for mobile browsers */
+      body { height: 100dvh; }
 
+      /* Compact single-row header */
       header {
-        padding: 8px 12px;
-        gap: 8px;
+        padding: 6px 10px;
+        gap: 6px;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
       }
       header h1 {
-        font-size: 1rem;
+        font-size: 0.95rem;
+        display: none; /* hide title on mobile, save space for map */
       }
 
       .controls {
-        gap: 6px;
+        gap: 5px;
         width: 100%;
-        justify-content: flex-start;
+        flex-wrap: nowrap;
+        justify-content: space-between;
       }
       .controls select, .controls button {
-        padding: 8px 10px;
-        font-size: 0.78rem;
+        padding: 6px 8px;
+        font-size: 0.75rem;
         border-radius: 6px;
-        min-height: 38px; /* touch-friendly */
-      }
-      /* Hide text labels on smallest screens, keep emojis */
-      .controls .btn-primary,
-      .controls .btn-danger,
-      .controls .btn-location {
-        padding: 8px 10px;
+        min-height: 34px;
+        white-space: nowrap;
       }
       .refresh-badge {
-        display: none !important; /* save space, show in panel instead */
+        display: none !important;
       }
 
-      /* Layout: map fills screen, sidebar becomes bottom sheet */
+      /* Map takes ALL available space */
       .main-container {
         flex-direction: column-reverse;
         position: relative;
+        flex: 1;
+        overflow: hidden;
       }
 
       #map {
-        flex: 1;
-        min-height: 0;
+        position: absolute;
+        inset: 0;
+        width: 100%;
         height: 100%;
+        min-height: 0;
       }
 
+      /* Sidebar = hidden bottom sheet */
       .sidebar {
         position: fixed;
         bottom: 0;
@@ -387,12 +393,12 @@
         right: 0;
         width: 100%;
         min-width: 0;
-        max-height: 65dvh;
+        max-height: 70dvh;
         border-right: none;
         border-top: 2px solid #475569;
         border-radius: 20px 20px 0 0;
-        padding: 12px 16px 24px;
-        gap: 12px;
+        padding: 8px 14px 24px;
+        gap: 10px;
         z-index: 50;
         transform: translateY(100%);
         transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
@@ -404,7 +410,7 @@
         transform: translateY(0);
       }
 
-      /* Drag handle at top of sheet */
+      /* Drag handle */
       .sidebar::before {
         content: '';
         display: block;
@@ -412,59 +418,45 @@
         height: 4px;
         background: #475569;
         border-radius: 4px;
-        margin: 0 auto 10px;
+        margin: 0 auto 8px;
         flex-shrink: 0;
       }
 
-      /* Show floating toggle button on mobile */
+      /* Floating toggle */
       .mobile-panel-toggle {
         display: flex;
         align-items: center;
         gap: 8px;
+        bottom: 16px;
+        padding: 10px 20px;
+        font-size: 0.85rem;
       }
 
-      /* Time card — compact on mobile */
+      /* Time card compact */
       .time-card {
-        padding: 16px;
+        padding: 14px;
         border-radius: 12px;
       }
-      .time-remaining {
-        font-size: 2.4rem;
-      }
-      .time-card-label {
-        font-size: 0.6rem;
-      }
-      .time-remaining-sub {
-        font-size: 0.75rem;
-      }
+      .time-remaining { font-size: 2.2rem; }
+      .time-card-label { font-size: 0.6rem; }
+      .time-remaining-sub { font-size: 0.72rem; }
+      .time-eta { font-size: 0.95rem; }
 
-      /* Stats — tighter on mobile */
-      .stats-grid {
-        gap: 6px;
-      }
-      .stat-card {
-        padding: 10px;
-        border-radius: 8px;
-      }
-      .stat-value {
-        font-size: 1.1rem;
-      }
-      .stat-label {
-        font-size: 0.6rem;
-      }
+      /* Stats compact */
+      .stats-grid { gap: 6px; }
+      .stat-card { padding: 8px; border-radius: 8px; }
+      .stat-value { font-size: 1.05rem; }
+      .stat-label { font-size: 0.6rem; }
 
-      /* Search — bigger touch target */
+      /* Search */
       .search-container input {
-        padding: 12px 14px;
-        font-size: 1rem;
+        padding: 11px 12px;
+        font-size: 0.95rem;
         border-radius: 10px;
       }
 
-      /* Waypoints — touch-friendly remove buttons */
-      .waypoint-item {
-        padding: 10px 12px;
-        font-size: 0.82rem;
-      }
+      /* Waypoints */
+      .waypoint-item { padding: 8px 10px; font-size: 0.8rem; }
       .waypoint-remove {
         font-size: 1.2rem;
         padding: 4px 8px;
@@ -475,36 +467,23 @@
         justify-content: center;
       }
 
-      /* Location card */
-      .location-card {
-        padding: 10px 12px;
-      }
-
-      /* Instructions */
-      .instructions {
-        padding: 12px;
-        font-size: 0.8rem;
-      }
-
-      /* Leg details */
-      .leg-details {
-        padding: 10px;
-      }
+      .location-card { padding: 8px 10px; }
+      .instructions { padding: 10px; font-size: 0.78rem; }
+      .leg-details { padding: 10px; }
     }
 
-    /* ========== Extra small phones (< 380px) ========== */
+    /* ========== Extra small phones ========== */
     @media (max-width: 380px) {
-      header h1 { font-size: 0.9rem; }
-      .controls select, .controls button { font-size: 0.72rem; padding: 6px 8px; }
-      .time-remaining { font-size: 2rem; }
-      .stat-value { font-size: 1rem; }
+      .controls select, .controls button { font-size: 0.7rem; padding: 5px 6px; min-height: 30px; }
+      .time-remaining { font-size: 1.8rem; }
+      .stat-value { font-size: 0.95rem; }
     }
 
     /* ========== Landscape phone ========== */
     @media (max-width: 768px) and (orientation: landscape) {
-      .sidebar {
-        max-height: 75dvh;
-      }
+      header { padding: 4px 10px; }
+      .controls select, .controls button { min-height: 30px; padding: 4px 8px; }
+      .sidebar { max-height: 80dvh; }
     }
 
     /* ========== Instructions ========== */
