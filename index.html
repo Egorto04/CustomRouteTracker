@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Custom Route Time Calculator</title>
+    <style>
+        #map { height: 600px; width: 100%; }
+        #info-panel { padding: 20px; background: #f5f5f5; }
+        .waypoint { margin: 5px 0; padding: 5px; background: white; }
+    </style>
+</head>
+<body>
+    <div id="info-panel">
+        <h2>Total Time: <span id="total-time">0 min</span></h2>
+        <h3>Total Distance: <span id="total-distance">0 km</span></h3>
+        <select id="travel-mode">
+            <option value="DRIVING">Driving</option>
+            <option value="WALKING">Walking</option>
+            <option value="BICYCLING">Bicycling</option>
+            <option value="TRANSIT">Transit</option>
+        </select>
+        <button onclick="clearRoute()">Clear Route</button>
+        <div id="waypoints-list"></div>
+    </div>
+    <div id="map"></div>
+
+    <script>
+        let map, directionsService, directionsRenderer;
+        let waypoints = [];
+        let markers = [];
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 40.7128, lng: -74.0060 },
+                zoom: 12
+            });
+
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer({
+                map: map,
+                draggable: true
+            });
+
+            // Listen for clicks to add waypoints
+            map.addListener('click', function(e) {
+                addWaypoint(e.latLng);
+            });
+
+            // Listen for changes when user drags route
+            directionsRenderer.addListener('directions_changed', function() {
+                calculateTotalTime();
+            });
+
+            document.getElementById('travel-mode').addEventListener('change', function() {
+                if (waypoints.length >= 2) {
+                    calculateRoute();
+                }
+            });
+        }
+
+        function addWaypoint(location) {
+            waypoints.push(location);
+            
+            // Add marker
+            const marker = new google.maps.Marker({
+                position: location,
+                map: map,
+                label: String(waypoints.length)
+            });
+            markers.push(marker);
+
+            updateWaypointsList();
+
+            if (waypoints.length >= 2) {
+                calculateRoute();
+            }
+        }
+
+        function calculateRoute() {
+            if (waypoints.length < 2) return;
+
+            const origin = waypoints[0];
+            const destination = waypoints[waypoints.length - 1];
+            const waypointsForRoute = waypoints.slice(1, -1).map(point => ({
+                location: point,
+                stopover: true
+            }));
+
+            const travelMode = document.getElementById('travel-mode').value;
+
+            const request = {
+                origin: origin,
+                destination: destination,
+                waypoints: waypointsForRoute,
+                travelMode: google.maps.TravelMode[travelMode]
+            };
+
+            directionsService.route(request, function(result, status) {
+                if (status === 'OK') {
+                    directionsRenderer.setDirections(result);
+                    calculateTotalTime(result);
+                } else {
+                    alert('Route calculation failed: ' + status);
+                }
+            });
+        }
+
+        function calculateTotalTime(result) {
+            if (!result) return;
+
+            let totalTime = 0;
+            let totalDistance = 0;
+
+            const legs = result.routes[0].legs;
+            for (let i = 0; i < legs.length; i++) {
+                totalTime += legs[i].duration.value; // in seconds
+                totalDistance += legs[i].distance.value; // in meters
+            }
+
+            document.getElementById('total-time').textContent = 
+                Math.round(totalTime / 60) + ' min';
+            document.getElementById('total-distance').textContent = 
+                (totalDistance / 1000).toFixed(2) + ' km';
+        }
+
+        function updateWaypointsList() {
+            const list = document.getElementById('waypoints-list');
+            list.innerHTML = '<h3>Waypoints:</h3>';
+            waypoints.forEach((point, index) => {
+                const div = document.createElement('div');
+                div.className = 'waypoint';
+                div.textContent = `Point ${index + 1}: ${point.lat().toFixed(4)}, ${point.lng().toFixed(4)}`;
+                list.appendChild(div);
+            });
+        }
+
+        function clearRoute() {
+            waypoints = [];
+            markers.forEach(marker => marker.setMap(null));
+            markers = [];
+            directionsRenderer.setDirections({routes: []});
+            document.getElementById('total-time').textContent = '0 min';
+            document.getElementById('total-distance').textContent = '0 km';
+            updateWaypointsList();
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDcX1g3SHsx9_UUKi2eSM0a00Y3MYhEjO8&callback=initMap" async defer></script>
+</body>
+</html>

@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Custom Route Timer</title>
+  <style>
+    /* ========== Reset & Base ========== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ========== Header ========== */
+    header {
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      z-index: 10;
+      flex-wrap: wrap;
+    }
+    header h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #38bdf8;
+      white-space: nowrap;
+    }
+
+    /* ========== Controls ========== */
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .controls select, .controls button {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid #475569;
+      background: #1e293b;
+      color: #e2e8f0;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .controls select:hover, .controls button:hover {
+      border-color: #38bdf8;
+    }
+    .btn-primary {
+      background: #0284c7 !important;
+      border-color: #0284c7 !important;
+      font-weight: 600;
+    }
+    .btn-primary:hover { background: #0369a1 !important; }
+    .btn-danger {
+      background: #dc2626 !important;
+      border-color: #dc2626 !important;
+      font-weight: 600;
+    }
+    .btn-danger:hover { background: #b91c1c !important; }
+
+    /* ========== Refresh indicator ========== */
+    .refresh-badge {
+      font-size: 0.7rem;
+      color: #94a3b8;
+      padding: 4px 10px;
+      background: #0f172a;
+      border-radius: 20px;
+      border: 1px solid #334155;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .refresh-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #22c55e;
+      animation: blink 2s infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* ========== Main Layout ========== */
+    .main-container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ========== Sidebar ========== */
+    .sidebar {
+      width: 360px;
+      min-width: 300px;
+      background: #1e293b;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      border-right: 1px solid #334155;
+    }
+
+    /* ========== Time Remaining Card ========== */
+    .time-card {
+      background: linear-gradient(135deg, #0c4a6e 0%, #164e63 100%);
+      border-radius: 16px;
+      padding: 28px 24px;
+      text-align: center;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+      transition: background 0.5s;
+    }
+    .time-card.has-route {
+      background: linear-gradient(135deg, #065f46 0%, #064e3b 100%);
+    }
+    .time-card.short {
+      background: linear-gradient(135deg, #92400e 0%, #78350f 100%);
+    }
+    .time-card-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #94a3b8;
+      margin-bottom: 6px;
+    }
+    .time-remaining {
+      font-size: 3.2rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 2px;
+      color: #f0f9ff;
+      line-height: 1;
+    }
+    .time-remaining-sub {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      margin-top: 10px;
+    }
+    .time-eta {
+      font-size: 1.1rem;
+      color: #67e8f9;
+      margin-top: 6px;
+      font-weight: 600;
+    }
+    .time-updated {
+      font-size: 0.65rem;
+      color: #64748b;
+      margin-top: 8px;
+    }
+
+    /* ========== Stats Grid ========== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .stat-card {
+      background: #0f172a;
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center;
+      border: 1px solid #334155;
+    }
+    .stat-value {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #38bdf8;
+    }
+    .stat-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #64748b;
+      margin-top: 4px;
+    }
+
+    /* ========== Waypoints List ========== */
+    .waypoints-section {
+      flex: 1;
+      overflow-y: auto;
+    }
+    .waypoints-section h3 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+    .waypoint-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      background: #0f172a;
+      border-radius: 8px;
+      margin-bottom: 6px;
+      border: 1px solid #334155;
+      font-size: 0.85rem;
+    }
+    .waypoint-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .waypoint-dot.origin { background: #22c55e; }
+    .waypoint-dot.via { background: #f59e0b; }
+    .waypoint-dot.destination { background: #ef4444; }
+    .waypoint-remove {
+      margin-left: auto;
+      background: none;
+      border: none;
+      color: #64748b;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 0 4px;
+    }
+    .waypoint-remove:hover { color: #ef4444; }
+
+    /* ========== Map ========== */
+    #map {
+      flex: 1;
+      min-height: 400px;
+    }
+
+    /* ========== Search Box ========== */
+    .search-container {
+      position: relative;
+    }
+    .search-container input {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid #475569;
+      background: #0f172a;
+      color: #e2e8f0;
+      font-size: 0.9rem;
+    }
+    .search-container input:focus {
+      outline: none;
+      border-color: #38bdf8;
+    }
+
+    /* ========== Leg Details ========== */
+    .leg-details {
+      background: #0f172a;
+      border-radius: 12px;
+      padding: 14px;
+      border: 1px solid #334155;
+    }
+    .leg-details h3 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+    .leg-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      font-size: 0.82rem;
+      border-bottom: 1px solid #1e293b;
+    }
+    .leg-item:last-child { border-bottom: none; }
+
+    /* ========== Loading ========== */
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: #0f172a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    .loading-spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid #334155;
+      border-top: 4px solid #38bdf8;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text {
+      margin-top: 16px;
+      color: #94a3b8;
+    }
+    .error-message {
+      background: #7f1d1d;
+      border: 1px solid #dc2626;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    /* ========== Responsive ========== */
+    @media (max-width: 768px) {
+      .main-container { flex-direction: column; }
+      .sidebar {
+        width: 100%;
+        max-height: 45vh;
+        border-right: none;
+        border-bottom: 1px solid #334155;
+      }
+      .time-remaining { font-size: 2.2rem; }
+      header { padding: 10px 16px; }
+    }
+
+    /* ========== Instructions ========== */
+    .instructions {
+      background: #0f172a;
+      border: 1px dashed #475569;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+    .instructions strong { color: #38bdf8; }
+
+    /* ========== Traffic badge ========== */
+    .traffic-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      margin-top: 6px;
+    }
+    .traffic-badge.green { background: #166534; color: #86efac; }
+    .traffic-badge.yellow { background: #854d0e; color: #fde047; }
+    .traffic-badge.red { background: #991b1b; color: #fca5a5; }
+
+    /* ========== Location Button ========== */
+    .btn-location {
+      background: #1e40af !important;
+      border-color: #1e40af !important;
+      font-weight: 600;
+    }
+    .btn-location:hover { background: #1e3a8a !important; }
+    .btn-location.active {
+      background: #16a34a !important;
+      border-color: #16a34a !important;
+    }
+
+    /* ========== Location Status Card ========== */
+    .location-card {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.82rem;
+    }
+    .location-card.tracking {
+      border-color: #22c55e;
+    }
+    .location-pulse {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #3b82f6;
+      flex-shrink: 0;
+      position: relative;
+    }
+    .location-pulse::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 2px solid #3b82f6;
+      animation: locPulse 1.5s ease-out infinite;
+    }
+    @keyframes locPulse {
+      0% { transform: scale(1); opacity: 0.6; }
+      100% { transform: scale(1.8); opacity: 0; }
+    }
+    .location-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .location-info .loc-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #64748b;
+    }
+    .location-info .loc-coords {
+      font-variant-numeric: tabular-nums;
+      color: #e2e8f0;
+      font-size: 0.8rem;
+    }
+    .location-info .loc-accuracy {
+      font-size: 0.7rem;
+      color: #64748b;
+    }
+    .btn-locate-stop {
+      background: none;
+      border: none;
+      color: #64748b;
+      cursor: pointer;
+      font-size: 0.85rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .btn-locate-stop:hover { color: #ef4444; background: #1e293b; }
+  </style>
+</head>
+<body>
+
+  <!-- Loading Screen -->
+  <div class="loading-overlay" id="loading-overlay">
+    <div class="loading-spinner"></div>
+    <p class="loading-text">Loading Google Maps…</p>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <h1>🗺️ Custom Route Timer</h1>
+    <div class="controls">
+      <select id="travel-mode" title="Travel mode">
+        <option value="DRIVING">🚗 Driving</option>
+        <option value="WALKING">🚶 Walking</option>
+        <option value="BICYCLING">🚲 Bicycling</option>
+        <option value="TRANSIT">🚌 Transit</option>
+      </select>
+      <select id="traffic-model" title="Traffic model (driving only)">
+        <option value="best_guess">Best Guess</option>
+        <option value="pessimistic">Pessimistic</option>
+        <option value="optimistic">Optimistic</option>
+      </select>
+      <button class="btn-location" id="btn-location">📍 My Location</button>
+      <button class="btn-primary" id="btn-reverse">⇄ Reverse</button>
+      <button class="btn-danger" id="btn-clear">✕ Clear</button>
+      <div class="refresh-badge" id="refresh-badge" style="display:none;">
+        <span class="refresh-dot"></span>
+        <span id="refresh-text">Live · updates every 60s</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <div class="main-container">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+
+      <!-- Search -->
+      <div class="search-container">
+        <input type="text" id="place-search" placeholder="🔍 Search for a place…">
+      </div>
+
+      <!-- Location Status -->
+      <div class="location-card" id="location-card" style="display:none;">
+        <div class="location-pulse"></div>
+        <div class="location-info">
+          <div class="loc-label">Your Location</div>
+          <div class="loc-coords" id="loc-coords">Acquiring…</div>
+          <div class="loc-accuracy" id="loc-accuracy"></div>
+        </div>
+        <button class="btn-locate-stop" id="btn-locate-stop" title="Stop tracking">✕</button>
+      </div>
+
+      <!-- Time Remaining -->
+      <div class="time-card" id="time-card">
+        <div class="time-card-label">Time Remaining to Destination</div>
+        <div class="time-remaining" id="time-remaining">--:--</div>
+        <div class="time-remaining-sub" id="time-remaining-sub">Add at least 2 points to see travel time</div>
+        <div class="time-eta" id="time-eta"></div>
+        <div id="traffic-indicator"></div>
+        <div class="time-updated" id="time-updated"></div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="total-duration">—</div>
+          <div class="stat-label">Total Time</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="total-distance">—</div>
+          <div class="stat-label">Distance</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-eta">—</div>
+          <div class="stat-label">Arrival (ETA)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-speed">—</div>
+          <div class="stat-label">Avg Speed</div>
+        </div>
+      </div>
+
+      <!-- Leg Breakdown -->
+      <div class="leg-details" id="leg-details" style="display:none;">
+        <h3>Route Legs</h3>
+        <div id="leg-list"></div>
+      </div>
+
+      <!-- Waypoints -->
+      <div class="waypoints-section">
+        <h3>Waypoints</h3>
+        <div id="waypoints-list">
+          <div class="instructions">
+            <strong>Click on the map</strong> to add waypoints.<br>
+            Add at least <strong>2 points</strong> to create a route.<br>
+            Drag the route line to adjust the path.<br><br>
+            The <strong>remaining travel time</strong> updates automatically<br>
+            using live traffic data every 60 seconds.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Map -->
+    <div id="map"></div>
+  </div>
+
+  <script>
+    // ==========================================
+    // State
+    // ==========================================
+    let map, directionsService, directionsRenderer, searchBox;
+    let waypoints = [];
+    let markers = [];
+    let routeResult = null;
+    let totalDurationSeconds = 0;
+    let totalDistanceMeters = 0;
+    let lastRouteUpdate = null;
+    let liveRefreshInterval = null;
+    let countdownInterval = null;
+
+    // Geolocation state
+    let locationWatchId = null;
+    let locationMarker = null;
+    let locationAccuracyCircle = null;
+    let isTrackingLocation = false;
+
+    const REFRESH_INTERVAL_MS = 60 * 1000; // Re-query directions every 60s for live traffic
+
+    // ==========================================
+    // Load Google Maps API key from server
+    // ==========================================
+    async function loadApp() {
+      try {
+        const res = await fetch('/api/maps-config');
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error || 'Failed to load configuration');
+        }
+        const { apiKey } = await res.json();
+        loadGoogleMaps(apiKey);
+      } catch (e) {
+        document.getElementById('loading-overlay').innerHTML = `
+          <div class="error-message">
+            <h2>⚠️ Configuration Error</h2>
+            <p style="margin-top:8px;">${e.message}</p>
+            <p style="margin-top:12px;font-size:0.85rem;color:#94a3b8;">
+              Make sure you've set <code>GOOGLE_MAPS_API_KEY</code> in your <code>.env</code> file and restarted the server.
+            </p>
+          </div>`;
+      }
+    }
+
+    function loadGoogleMaps(apiKey) {
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initMap`;
+      script.async = true;
+      script.defer = true;
+      script.onerror = () => {
+        document.getElementById('loading-overlay').innerHTML = `
+          <div class="error-message">
+            <h2>⚠️ Google Maps Failed to Load</h2>
+            <p style="margin-top:8px;">Check your API key and ensure the Maps JavaScript API is enabled.</p>
+          </div>`;
+      };
+      document.head.appendChild(script);
+    }
+
+    // ==========================================
+    // Initialize Map
+    // ==========================================
+    function initMap() {
+      document.getElementById('loading-overlay').style.display = 'none';
+
+      map = new google.maps.Map(document.getElementById('map'), {
+        center: { lat: 41.0082, lng: 28.9784 },
+        zoom: 12,
+        styles: darkMapStyle(),
+        disableDefaultUI: false,
+        zoomControl: true,
+        mapTypeControl: true,
+        streetViewControl: false,
+        fullscreenControl: true
+      });
+
+      directionsService = new google.maps.DirectionsService();
+      directionsRenderer = new google.maps.DirectionsRenderer({
+        map: map,
+        draggable: true,
+        polylineOptions: {
+          strokeColor: '#38bdf8',
+          strokeWeight: 5,
+          strokeOpacity: 0.9
+        },
+        suppressMarkers: false
+      });
+
+      // Places search
+      const input = document.getElementById('place-search');
+      searchBox = new google.maps.places.SearchBox(input);
+      map.addListener('bounds_changed', () => {
+        searchBox.setBounds(map.getBounds());
+      });
+      searchBox.addListener('places_changed', () => {
+        const places = searchBox.getPlaces();
+        if (places.length === 0) return;
+        const place = places[0];
+        if (!place.geometry || !place.geometry.location) return;
+        map.panTo(place.geometry.location);
+        map.setZoom(15);
+        addWaypoint(place.geometry.location, place.name || place.formatted_address);
+        input.value = '';
+      });
+
+      // Click to add waypoints
+      map.addListener('click', (e) => {
+        addWaypoint(e.latLng);
+      });
+
+      // When user drags the route
+      directionsRenderer.addListener('directions_changed', () => {
+        const dirs = directionsRenderer.getDirections();
+        if (dirs) {
+          updateRouteInfo(dirs);
+          restartLiveRefresh();
+        }
+      });
+
+      // Travel mode / traffic model change
+      document.getElementById('travel-mode').addEventListener('change', () => {
+        if (waypoints.length >= 2) calculateRoute();
+      });
+      document.getElementById('traffic-model').addEventListener('change', () => {
+        if (waypoints.length >= 2) calculateRoute();
+      });
+    }
+
+    // ==========================================
+    // Waypoint Management
+    // ==========================================
+    function addWaypoint(location, name) {
+      const index = waypoints.length;
+      const label = name || `Point ${index + 1}`;
+
+      waypoints.push({ location, name: label });
+
+      const marker = new google.maps.Marker({
+        position: location,
+        map: map,
+        label: { text: String(index + 1), color: '#fff', fontWeight: '700' },
+        title: label,
+        animation: google.maps.Animation.DROP
+      });
+      markers.push(marker);
+
+      updateWaypointsList();
+
+      if (waypoints.length >= 2) {
+        calculateRoute();
+      }
+    }
+
+    function removeWaypoint(index) {
+      waypoints.splice(index, 1);
+      markers[index].setMap(null);
+      markers.splice(index, 1);
+
+      markers.forEach((m, i) => {
+        m.setLabel({ text: String(i + 1), color: '#fff', fontWeight: '700' });
+      });
+
+      updateWaypointsList();
+
+      if (waypoints.length >= 2) {
+        calculateRoute();
+      } else {
+        directionsRenderer.setDirections({ routes: [] });
+        resetStats();
+        stopLiveRefresh();
+      }
+    }
+
+    function reverseRoute() {
+      if (waypoints.length < 2) return;
+      waypoints.reverse();
+      markers.forEach((m, i) => {
+        m.setPosition(waypoints[i].location);
+        m.setLabel({ text: String(i + 1), color: '#fff', fontWeight: '700' });
+      });
+      updateWaypointsList();
+      calculateRoute();
+    }
+
+    function clearRoute() {
+      stopLiveRefresh();
+      waypoints = [];
+      markers.forEach(m => m.setMap(null));
+      markers = [];
+      directionsRenderer.setDirections({ routes: [] });
+      resetStats();
+      updateWaypointsList();
+    }
+
+    function updateWaypointsList() {
+      const list = document.getElementById('waypoints-list');
+      if (waypoints.length === 0) {
+        list.innerHTML = `<div class="instructions">
+          <strong>Click on the map</strong> to add waypoints.<br>
+          Add at least <strong>2 points</strong> to create a route.<br>
+          Drag the route line to adjust the path.<br><br>
+          The <strong>remaining travel time</strong> updates automatically<br>
+          using live traffic data every 60 seconds.
+        </div>`;
+        return;
+      }
+
+      list.innerHTML = '';
+      waypoints.forEach((wp, i) => {
+        const isFirst = i === 0;
+        const isLast = i === waypoints.length - 1 && waypoints.length > 1;
+        const dotClass = isFirst ? 'origin' : (isLast ? 'destination' : 'via');
+        const label = isFirst ? '🟢 Start' : (isLast ? '🔴 End' : `📍 Via ${i}`);
+
+        const div = document.createElement('div');
+        div.className = 'waypoint-item';
+        div.innerHTML = `
+          <span class="waypoint-dot ${dotClass}"></span>
+          <span>${label}: ${wp.name}</span>
+          <button class="waypoint-remove" data-index="${i}" title="Remove">✕</button>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    // ==========================================
+    // Route Calculation
+    // ==========================================
+    function calculateRoute() {
+      if (waypoints.length < 2) return;
+
+      const origin = waypoints[0].location;
+      const destination = waypoints[waypoints.length - 1].location;
+      const intermediates = waypoints.slice(1, -1).map(wp => ({
+        location: wp.location,
+        stopover: true
+      }));
+
+      const travelMode = document.getElementById('travel-mode').value;
+      const trafficModel = document.getElementById('traffic-model').value;
+
+      const request = {
+        origin,
+        destination,
+        waypoints: intermediates,
+        travelMode: google.maps.TravelMode[travelMode],
+        provideRouteAlternatives: false,
+        optimizeWaypoints: false
+      };
+
+      if (travelMode === 'DRIVING') {
+        request.drivingOptions = {
+          departureTime: new Date(),
+          trafficModel: google.maps.TrafficModel[trafficModel.toUpperCase()]
+        };
+      }
+
+      directionsService.route(request, (result, status) => {
+        if (status === 'OK') {
+          directionsRenderer.setDirections(result);
+          updateRouteInfo(result);
+          restartLiveRefresh();
+        } else {
+          console.error('Directions request failed:', status);
+          alert('Could not calculate route: ' + status);
+        }
+      });
+    }
+
+    // Silent refresh — re-queries directions for updated traffic, no map flicker
+    function silentRefreshRoute() {
+      if (waypoints.length < 2) return;
+
+      const origin = waypoints[0].location;
+      const destination = waypoints[waypoints.length - 1].location;
+      const intermediates = waypoints.slice(1, -1).map(wp => ({
+        location: wp.location,
+        stopover: true
+      }));
+
+      const travelMode = document.getElementById('travel-mode').value;
+      const trafficModel = document.getElementById('traffic-model').value;
+
+      const request = {
+        origin,
+        destination,
+        waypoints: intermediates,
+        travelMode: google.maps.TravelMode[travelMode],
+        provideRouteAlternatives: false,
+        optimizeWaypoints: false
+      };
+
+      if (travelMode === 'DRIVING') {
+        request.drivingOptions = {
+          departureTime: new Date(),
+          trafficModel: google.maps.TrafficModel[trafficModel.toUpperCase()]
+        };
+      }
+
+      directionsService.route(request, (result, status) => {
+        if (status === 'OK') {
+          updateRouteInfo(result);
+        }
+      });
+    }
+
+    function updateRouteInfo(result) {
+      routeResult = result;
+      const legs = result.routes[0].legs;
+
+      let totalSec = 0;
+      let totalMeters = 0;
+      const legList = document.getElementById('leg-list');
+      legList.innerHTML = '';
+
+      legs.forEach((leg, i) => {
+        const dur = leg.duration_in_traffic || leg.duration;
+        totalSec += dur.value;
+        totalMeters += leg.distance.value;
+
+        const div = document.createElement('div');
+        div.className = 'leg-item';
+        div.innerHTML = `
+          <span>Leg ${i + 1}</span>
+          <span>${dur.text} · ${leg.distance.text}</span>
+        `;
+        legList.appendChild(div);
+      });
+
+      totalDurationSeconds = totalSec;
+      totalDistanceMeters = totalMeters;
+      lastRouteUpdate = Date.now();
+
+      // --- Update all displays ---
+      const distKm = (totalMeters / 1000).toFixed(1);
+      const avgSpeed = totalSec > 0 ? Math.round((totalMeters / 1000) / (totalSec / 3600)) : 0;
+      const eta = new Date(Date.now() + totalSec * 1000);
+
+      document.getElementById('total-duration').textContent = formatDuration(totalSec);
+      document.getElementById('total-distance').textContent = distKm + ' km';
+      document.getElementById('stat-eta').textContent = formatTime(eta);
+      document.getElementById('stat-speed').textContent = avgSpeed + ' km/h';
+      document.getElementById('leg-details').style.display = 'block';
+
+      // Traffic indicator
+      const trafficEl = document.getElementById('traffic-indicator');
+      const hasTraffic = legs.some(l => l.duration_in_traffic);
+      if (hasTraffic) {
+        const normalSec = legs.reduce((sum, l) => sum + l.duration.value, 0);
+        const ratio = totalSec / normalSec;
+        let cls = 'green', txt = 'Light traffic';
+        if (ratio > 1.4) { cls = 'red'; txt = 'Heavy traffic'; }
+        else if (ratio > 1.15) { cls = 'yellow'; txt = 'Moderate traffic'; }
+        trafficEl.innerHTML = `<span class="traffic-badge ${cls}">${txt}</span>`;
+      } else {
+        trafficEl.innerHTML = '';
+      }
+
+      // Update the big remaining time display immediately
+      updateRemainingTimeDisplay();
+      startCountdown();
+    }
+
+    // ==========================================
+    // Live Remaining Time Display
+    // ==========================================
+    function updateRemainingTimeDisplay() {
+      if (totalDurationSeconds <= 0 || !lastRouteUpdate) return;
+
+      // Seconds elapsed since we last fetched the route
+      const elapsedSinceUpdate = (Date.now() - lastRouteUpdate) / 1000;
+      const remaining = Math.max(0, totalDurationSeconds - elapsedSinceUpdate);
+
+      const card = document.getElementById('time-card');
+      const display = document.getElementById('time-remaining');
+      const sub = document.getElementById('time-remaining-sub');
+      const etaEl = document.getElementById('time-eta');
+      const updatedEl = document.getElementById('time-updated');
+
+      // Format remaining time
+      display.textContent = formatCountdown(remaining);
+
+      // ETA
+      const eta = new Date(Date.now() + remaining * 1000);
+      etaEl.textContent = '🕐 ETA: ' + formatTime(eta);
+
+      // Card state
+      card.classList.remove('has-route', 'short');
+      if (remaining <= 0) {
+        sub.textContent = '🎉 You should have arrived!';
+        card.classList.add('short');
+      } else if (remaining < 300) {
+        sub.textContent = 'Almost there!';
+        card.classList.add('short');
+      } else {
+        sub.textContent = formatDuration(totalDurationSeconds) + ' total · Live traffic';
+        card.classList.add('has-route');
+      }
+
+      // Last updated
+      updatedEl.textContent = 'Route updated: ' + formatTime(new Date(lastRouteUpdate));
+    }
+
+    function startCountdown() {
+      if (countdownInterval) clearInterval(countdownInterval);
+      countdownInterval = setInterval(() => {
+        updateRemainingTimeDisplay();
+      }, 1000);
+    }
+
+    // ==========================================
+    // Live Refresh (re-queries Google every 60s)
+    // ==========================================
+    function restartLiveRefresh() {
+      stopLiveRefresh();
+      document.getElementById('refresh-badge').style.display = 'flex';
+
+      // Start the 1-second countdown tick
+      startCountdown();
+
+      // Re-query Google for fresh traffic data every 60s
+      liveRefreshInterval = setInterval(() => {
+        silentRefreshRoute();
+      }, REFRESH_INTERVAL_MS);
+    }
+
+    function stopLiveRefresh() {
+      if (liveRefreshInterval) clearInterval(liveRefreshInterval);
+      if (countdownInterval) clearInterval(countdownInterval);
+      liveRefreshInterval = null;
+      countdownInterval = null;
+      document.getElementById('refresh-badge').style.display = 'none';
+    }
+
+    // ==========================================
+    // Helpers
+    // ==========================================
+    function formatCountdown(seconds) {
+      if (seconds <= 0) return '00:00';
+      const h = Math.floor(seconds / 3600);
+      const m = Math.floor((seconds % 3600) / 60);
+      const s = Math.floor(seconds % 60);
+      if (h > 0) {
+        return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      }
+      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    function formatDuration(seconds) {
+      const h = Math.floor(seconds / 3600);
+      const m = Math.floor((seconds % 3600) / 60);
+      if (h > 0) return `${h}h ${m}m`;
+      return `${m} min`;
+    }
+
+    function formatTime(date) {
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function resetStats() {
+      totalDurationSeconds = 0;
+      totalDistanceMeters = 0;
+      routeResult = null;
+      lastRouteUpdate = null;
+      document.getElementById('total-duration').textContent = '—';
+      document.getElementById('total-distance').textContent = '—';
+      document.getElementById('stat-eta').textContent = '—';
+      document.getElementById('stat-speed').textContent = '—';
+      document.getElementById('time-remaining').textContent = '--:--';
+      document.getElementById('time-remaining-sub').textContent = 'Add at least 2 points to see travel time';
+      document.getElementById('time-eta').textContent = '';
+      document.getElementById('time-updated').textContent = '';
+      document.getElementById('traffic-indicator').innerHTML = '';
+      document.getElementById('leg-details').style.display = 'none';
+      document.getElementById('time-card').classList.remove('has-route', 'short');
+    }
+
+    function darkMapStyle() {
+      return [
+        { elementType: "geometry", stylers: [{ color: "#1d2c4d" }] },
+        { elementType: "labels.text.fill", stylers: [{ color: "#8ec3b9" }] },
+        { elementType: "labels.text.stroke", stylers: [{ color: "#1a3646" }] },
+        { featureType: "administrative.country", elementType: "geometry.stroke", stylers: [{ color: "#4b6878" }] },
+        { featureType: "road", elementType: "geometry", stylers: [{ color: "#304a7d" }] },
+        { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#255763" }] },
+        { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#2c6675" }] },
+        { featureType: "road.highway", elementType: "geometry.stroke", stylers: [{ color: "#255763" }] },
+        { featureType: "transit", elementType: "labels.text.fill", stylers: [{ color: "#98a5be" }] },
+        { featureType: "water", elementType: "geometry.fill", stylers: [{ color: "#0e1626" }] },
+        { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#4e6d70" }] }
+      ];
+    }
+
+    // ==========================================
+    // Geolocation (Secure)
+    // ==========================================
+    // - Uses browser's built-in Geolocation API
+    // - Always prompts user for permission
+    // - Location data NEVER leaves the browser
+    // - Requires HTTPS in production (enforced by browsers)
+    // ==========================================
+
+    function startLocationTracking() {
+      if (!navigator.geolocation) {
+        alert('Geolocation is not supported by your browser.');
+        return;
+      }
+
+      // Check if we're on HTTPS or localhost (geolocation requirement)
+      const isSecureContext = window.isSecureContext;
+      if (!isSecureContext) {
+        alert('Location sharing requires HTTPS. It works on localhost for development, but you need HTTPS in production.');
+        return;
+      }
+
+      isTrackingLocation = true;
+      const btn = document.getElementById('btn-location');
+      btn.classList.add('active');
+      btn.textContent = '📍 Tracking…';
+      document.getElementById('location-card').style.display = 'flex';
+      document.getElementById('loc-coords').textContent = 'Acquiring…';
+
+      locationWatchId = navigator.geolocation.watchPosition(
+        onLocationSuccess,
+        onLocationError,
+        {
+          enableHighAccuracy: true,
+          maximumAge: 10000,      // Accept cached position up to 10s old
+          timeout: 15000          // Wait up to 15s for a fix
+        }
+      );
+    }
+
+    function stopLocationTracking() {
+      if (locationWatchId !== null) {
+        navigator.geolocation.clearWatch(locationWatchId);
+        locationWatchId = null;
+      }
+      isTrackingLocation = false;
+
+      // Remove marker & circle
+      if (locationMarker) { locationMarker.setMap(null); locationMarker = null; }
+      if (locationAccuracyCircle) { locationAccuracyCircle.setMap(null); locationAccuracyCircle = null; }
+
+      // Update UI
+      const btn = document.getElementById('btn-location');
+      btn.classList.remove('active');
+      btn.textContent = '📍 My Location';
+      document.getElementById('location-card').style.display = 'none';
+      document.getElementById('location-card').classList.remove('tracking');
+    }
+
+    function toggleLocationTracking() {
+      if (isTrackingLocation) {
+        stopLocationTracking();
+      } else {
+        startLocationTracking();
+      }
+    }
+
+    function onLocationSuccess(position) {
+      const { latitude, longitude, accuracy } = position.coords;
+      const pos = { lat: latitude, lng: longitude };
+
+      document.getElementById('location-card').classList.add('tracking');
+      document.getElementById('loc-coords').textContent =
+        `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
+      document.getElementById('loc-accuracy').textContent =
+        `Accuracy: ±${Math.round(accuracy)}m`;
+
+      // Create or update the blue dot marker
+      if (!locationMarker) {
+        locationMarker = new google.maps.Marker({
+          position: pos,
+          map: map,
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 8,
+            fillColor: '#4285F4',
+            fillOpacity: 1,
+            strokeColor: '#ffffff',
+            strokeWeight: 3,
+          },
+          title: 'Your Location',
+          zIndex: 999
+        });
+
+        // Accuracy circle
+        locationAccuracyCircle = new google.maps.Circle({
+          center: pos,
+          radius: accuracy,
+          map: map,
+          fillColor: '#4285F4',
+          fillOpacity: 0.1,
+          strokeColor: '#4285F4',
+          strokeOpacity: 0.3,
+          strokeWeight: 1,
+          clickable: false
+        });
+
+        // Pan to user location on first fix
+        map.panTo(pos);
+        map.setZoom(15);
+      } else {
+        locationMarker.setPosition(pos);
+        locationAccuracyCircle.setCenter(pos);
+        locationAccuracyCircle.setRadius(accuracy);
+      }
+    }
+
+    function onLocationError(error) {
+      let msg;
+      switch (error.code) {
+        case error.PERMISSION_DENIED:
+          msg = 'Location permission denied. Please allow location access in your browser settings.';
+          break;
+        case error.POSITION_UNAVAILABLE:
+          msg = 'Location information is unavailable.';
+          break;
+        case error.TIMEOUT:
+          msg = 'Location request timed out. Please try again.';
+          break;
+        default:
+          msg = 'An unknown error occurred getting your location.';
+      }
+
+      document.getElementById('loc-coords').textContent = 'Error';
+      document.getElementById('loc-accuracy').textContent = msg;
+
+      // If permission denied, stop tracking entirely
+      if (error.code === error.PERMISSION_DENIED) {
+        stopLocationTracking();
+        alert(msg);
+      }
+    }
+
+    // ==========================================
+    // Boot
+    // ==========================================
+    loadApp();
+
+    // ==========================================
+    // Event Listeners (no inline onclick)
+    // ==========================================
+    document.getElementById('btn-reverse').addEventListener('click', () => {
+      reverseRoute();
+    });
+    document.getElementById('btn-clear').addEventListener('click', () => {
+      clearRoute();
+    });
+    document.getElementById('btn-location').addEventListener('click', () => {
+      toggleLocationTracking();
+    });
+    document.getElementById('btn-locate-stop').addEventListener('click', () => {
+      stopLocationTracking();
+    });
+    // Delegate clicks on waypoint remove buttons
+    document.getElementById('waypoints-list').addEventListener('click', (e) => {
+      const btn = e.target.closest('.waypoint-remove');
+      if (btn) {
+        const index = parseInt(btn.getAttribute('data-index'), 10);
+        removeWaypoint(index);
+      }
+    });
+  </script>
+</body>
+</html>
