@@ -137,10 +137,8 @@
       margin-bottom: 6px;
     }
     .time-remaining {
-      font-size: 3.2rem;
+      font-size: 2.6rem;
       font-weight: 800;
-      font-variant-numeric: tabular-nums;
-      letter-spacing: 2px;
       color: #f0f9ff;
       line-height: 1;
     }
@@ -644,10 +642,10 @@
         <button class="btn-locate-stop" id="btn-locate-stop" title="Stop tracking">✕</button>
       </div>
 
-      <!-- Time Remaining -->
+      <!-- Travel Time -->
       <div class="time-card" id="time-card">
-        <div class="time-card-label">Time Remaining to Destination</div>
-        <div class="time-remaining" id="time-remaining">--:--</div>
+        <div class="time-card-label">Estimated Travel Time</div>
+        <div class="time-remaining" id="time-remaining">—</div>
         <div class="time-remaining-sub" id="time-remaining-sub">Add at least 2 points to see travel time</div>
         <div class="time-eta" id="time-eta"></div>
         <div id="traffic-indicator"></div>
@@ -717,7 +715,6 @@
     let totalDistanceMeters = 0;
     let lastRouteUpdate = null;
     let liveRefreshInterval = null;
-    let countdownInterval = null;
 
     // Geolocation state
     let locationWatchId = null;
@@ -1065,20 +1062,15 @@
         trafficEl.innerHTML = '';
       }
 
-      // Update the big remaining time display immediately
-      updateRemainingTimeDisplay();
-      startCountdown();
+      // Update the travel time display
+      updateTravelTimeDisplay();
     }
 
     // ==========================================
-    // Live Remaining Time Display
+    // Travel Time Display
     // ==========================================
-    function updateRemainingTimeDisplay() {
+    function updateTravelTimeDisplay() {
       if (totalDurationSeconds <= 0 || !lastRouteUpdate) return;
-
-      // Seconds elapsed since we last fetched the route
-      const elapsedSinceUpdate = (Date.now() - lastRouteUpdate) / 1000;
-      const remaining = Math.max(0, totalDurationSeconds - elapsedSinceUpdate);
 
       const card = document.getElementById('time-card');
       const display = document.getElementById('time-remaining');
@@ -1086,35 +1078,20 @@
       const etaEl = document.getElementById('time-eta');
       const updatedEl = document.getElementById('time-updated');
 
-      // Format remaining time
-      display.textContent = formatCountdown(remaining);
+      // Show the travel time as a readable string
+      display.textContent = formatDuration(totalDurationSeconds);
 
       // ETA
-      const eta = new Date(Date.now() + remaining * 1000);
+      const eta = new Date(Date.now() + totalDurationSeconds * 1000);
       etaEl.textContent = '🕐 ETA: ' + formatTime(eta);
 
-      // Card state
-      card.classList.remove('has-route', 'short');
-      if (remaining <= 0) {
-        sub.textContent = '🎉 You should have arrived!';
-        card.classList.add('short');
-      } else if (remaining < 300) {
-        sub.textContent = 'Almost there!';
-        card.classList.add('short');
-      } else {
-        sub.textContent = formatDuration(totalDurationSeconds) + ' total · Live traffic';
-        card.classList.add('has-route');
-      }
+      // Sub text with traffic note
+      sub.textContent = 'Based on current traffic';
+      card.classList.remove('short');
+      card.classList.add('has-route');
 
       // Last updated
-      updatedEl.textContent = 'Route updated: ' + formatTime(new Date(lastRouteUpdate));
-    }
-
-    function startCountdown() {
-      if (countdownInterval) clearInterval(countdownInterval);
-      countdownInterval = setInterval(() => {
-        updateRemainingTimeDisplay();
-      }, 1000);
+      updatedEl.textContent = 'Updated: ' + formatTime(new Date(lastRouteUpdate));
     }
 
     // ==========================================
@@ -1124,9 +1101,6 @@
       stopLiveRefresh();
       document.getElementById('refresh-badge').style.display = 'flex';
 
-      // Start the 1-second countdown tick
-      startCountdown();
-
       // Re-query Google for fresh traffic data every 60s
       liveRefreshInterval = setInterval(() => {
         silentRefreshRoute();
@@ -1135,26 +1109,13 @@
 
     function stopLiveRefresh() {
       if (liveRefreshInterval) clearInterval(liveRefreshInterval);
-      if (countdownInterval) clearInterval(countdownInterval);
       liveRefreshInterval = null;
-      countdownInterval = null;
       document.getElementById('refresh-badge').style.display = 'none';
     }
 
     // ==========================================
     // Helpers
     // ==========================================
-    function formatCountdown(seconds) {
-      if (seconds <= 0) return '00:00';
-      const h = Math.floor(seconds / 3600);
-      const m = Math.floor((seconds % 3600) / 60);
-      const s = Math.floor(seconds % 60);
-      if (h > 0) {
-        return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-      }
-      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-    }
-
     function formatDuration(seconds) {
       const h = Math.floor(seconds / 3600);
       const m = Math.floor((seconds % 3600) / 60);
@@ -1175,7 +1136,7 @@
       document.getElementById('total-distance').textContent = '—';
       document.getElementById('stat-eta').textContent = '—';
       document.getElementById('stat-speed').textContent = '—';
-      document.getElementById('time-remaining').textContent = '--:--';
+      document.getElementById('time-remaining').textContent = '—';
       document.getElementById('time-remaining-sub').textContent = 'Add at least 2 points to see travel time';
       document.getElementById('time-eta').textContent = '';
       document.getElementById('time-updated').textContent = '';
