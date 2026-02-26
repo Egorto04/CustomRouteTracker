@@ -5,56 +5,73 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#0a0a1a">
-  <title>RouteFlow — Custom Route Timer</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#0a0f1e">
+  <title>RouteFlow</title>
   <style>
-    /* ========== CSS Custom Properties ========== */
+    /* ============================================================
+       LIQUID GLASS DESIGN SYSTEM
+       Inspired by Apple's Liquid Glass (WWDC 2025 / iOS 26)
+       ============================================================ */
+
     :root {
-      --bg-primary: #06060f;
-      --bg-secondary: #0d0d1a;
-      --bg-card: rgba(15, 15, 30, 0.6);
-      --bg-glass: rgba(255, 255, 255, 0.03);
-      --bg-glass-hover: rgba(255, 255, 255, 0.06);
-      --border-subtle: rgba(255, 255, 255, 0.06);
-      --border-glow: rgba(255, 255, 255, 0.1);
-      --text-primary: #f0f0f5;
-      --text-secondary: #8888a0;
-      --text-muted: #55556a;
-      --accent: #6366f1;
-      --accent-light: #818cf8;
-      --accent-glow: rgba(99, 102, 241, 0.3);
-      --accent-2: #06b6d4;
-      --accent-2-glow: rgba(6, 182, 212, 0.3);
-      --success: #10b981;
-      --success-glow: rgba(16, 185, 129, 0.3);
-      --warning: #f59e0b;
-      --warning-glow: rgba(245, 158, 11, 0.3);
-      --danger: #ef4444;
-      --danger-glow: rgba(239, 68, 68, 0.3);
-      --radius-sm: 8px;
-      --radius-md: 12px;
-      --radius-lg: 16px;
-      --radius-xl: 20px;
-      --radius-2xl: 24px;
-      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-      --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.4);
-      --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
-      --shadow-glow: 0 0 30px var(--accent-glow);
-      --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-      --transition-base: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      --transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      /* Liquid Glass surface tokens */
+      --glass-bg: rgba(255, 255, 255, 0.08);
+      --glass-bg-hover: rgba(255, 255, 255, 0.12);
+      --glass-bg-active: rgba(255, 255, 255, 0.06);
+      --glass-bg-elevated: rgba(255, 255, 255, 0.14);
+      --glass-border: rgba(255, 255, 255, 0.12);
+      --glass-border-strong: rgba(255, 255, 255, 0.2);
+      --glass-blur: blur(20px) saturate(180%);
+      --glass-blur-heavy: blur(32px) saturate(180%);
+      --glass-blur-light: blur(12px) saturate(160%);
+
+      /* Depth shadows */
+      --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      --shadow-glass-sm: 0 4px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      --shadow-glass-lg: 0 12px 48px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      --shadow-float: 0 20px 60px rgba(0, 0, 0, 0.4);
+
+      /* Scene background */
+      --scene-bg: #0a0f1e;
+
+      /* Text - vibrant on glass */
+      --text-primary: rgba(255, 255, 255, 0.92);
+      --text-secondary: rgba(255, 255, 255, 0.55);
+      --text-tertiary: rgba(255, 255, 255, 0.35);
+
+      /* Semantic accent */
+      --accent: #007AFF;
+      --accent-glow: rgba(0, 122, 255, 0.35);
+      --success: #30D158;
+      --success-glow: rgba(48, 209, 88, 0.3);
+      --warning: #FF9F0A;
+      --danger: #FF453A;
+
+      /* Radii — concentric design */
+      --radius-xs: 8px;
+      --radius-sm: 12px;
+      --radius-md: 16px;
+      --radius-lg: 22px;
+      --radius-xl: 26px;
+      --radius-pill: 9999px;
+
+      /* Motion — spring physics */
+      --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      --fluid: cubic-bezier(0.2, 0, 0, 1);
+      --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+
+      /* Layout */
       --sidebar-width: 380px;
+      --header-height: 56px;
     }
 
-    /* ========== Reset & Base ========== */
+    /* ========== Reset ========== */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: var(--bg-primary);
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display',
+                   'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+      background: var(--scene-bg);
       color: var(--text-primary);
       height: 100vh;
       height: 100dvh;
@@ -65,26 +82,43 @@
       -moz-osx-font-smoothing: grayscale;
     }
 
-    /* ========== Scrollbar ========== */
-    ::-webkit-scrollbar { width: 5px; }
+    /* ========== Custom Scrollbar ========== */
+    ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
 
-    /* ========== Header ========== */
+    /* ========== SVG Refraction Filter ========== */
+    .svg-filters { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+    /* ============================================================
+       HEADER — Floating Liquid Glass Nav Bar
+       ============================================================ */
     header {
-      background: rgba(10, 10, 26, 0.85);
-      backdrop-filter: blur(20px) saturate(1.5);
-      -webkit-backdrop-filter: blur(20px) saturate(1.5);
-      padding: 10px 20px;
+      position: relative;
+      z-index: 100;
+      background: var(--glass-bg);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 0 20px;
+      height: var(--header-height);
       display: flex;
       align-items: center;
-      gap: 16px;
-      z-index: 10;
-      border-bottom: 1px solid var(--border-subtle);
-      flex-shrink: 0;
+      gap: 12px;
+      box-shadow: var(--shadow-glass-sm);
+    }
+    /* Specular top-edge highlight */
+    header::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 10%; right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+      pointer-events: none;
     }
 
+    /* Brand */
     .brand {
       display: flex;
       align-items: center;
@@ -92,140 +126,168 @@
       flex-shrink: 0;
     }
     .brand-icon {
-      width: 32px;
-      height: 32px;
+      width: 34px; height: 34px;
       border-radius: var(--radius-sm);
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.9rem;
-      box-shadow: 0 2px 12px var(--accent-glow);
-    }
-    .brand-text {
+      background: linear-gradient(135deg, #007AFF, #5AC8FA);
+      display: flex; align-items: center; justify-content: center;
       font-size: 1rem;
+      box-shadow: 0 4px 16px rgba(0, 122, 255, 0.3);
+      transition: transform 0.5s var(--spring);
+    }
+    .brand-icon:hover { transform: scale(1.05); }
+    .brand-text {
+      font-size: 1.05rem;
       font-weight: 700;
       letter-spacing: -0.02em;
-      background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-light) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: var(--text-primary);
     }
 
     /* ========== Controls ========== */
     .controls {
       display: flex;
       align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
+      gap: 6px;
       flex: 1;
+      justify-content: flex-end;
     }
-
     .control-group {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
     }
 
-    .controls select, .controls button {
-      padding: 7px 14px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border-glow);
-      background: var(--bg-glass);
+    /* Liquid Glass Segmented Control for selects */
+    .glass-select {
+      appearance: none;
+      -webkit-appearance: none;
+      padding: 7px 28px 7px 12px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--glass-border);
+      background: var(--glass-bg);
+      backdrop-filter: var(--glass-blur-light);
+      -webkit-backdrop-filter: var(--glass-blur-light);
       color: var(--text-primary);
-      font-family: 'Inter', sans-serif;
+      font-family: inherit;
       font-size: 0.8rem;
       font-weight: 500;
       cursor: pointer;
-      transition: all var(--transition-fast);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      transition: all 0.3s var(--fluid);
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='rgba(255,255,255,0.5)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
       white-space: nowrap;
     }
-    .controls select:hover, .controls button:hover {
-      background: var(--bg-glass-hover);
-      border-color: rgba(255,255,255,0.15);
+    .glass-select:hover {
+      background-color: var(--glass-bg-hover);
+      border-color: var(--glass-border-strong);
     }
-    .controls select:focus, .controls button:focus {
+    .glass-select:focus {
       outline: none;
       border-color: var(--accent);
-      box-shadow: 0 0 0 2px var(--accent-glow);
+      box-shadow: 0 0 0 3px var(--accent-glow);
     }
-    .controls select option {
-      background: #1a1a2e;
+    .glass-select option {
+      background: #1a1f30;
       color: var(--text-primary);
     }
 
-    .btn-action {
-      background: rgba(99, 102, 241, 0.15) !important;
-      border-color: rgba(99, 102, 241, 0.3) !important;
-      color: var(--accent-light) !important;
+    /* Liquid Glass Pill Buttons */
+    .glass-btn {
+      position: relative;
+      padding: 7px 16px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--glass-border);
+      background: var(--glass-bg);
+      backdrop-filter: var(--glass-blur-light);
+      -webkit-backdrop-filter: var(--glass-blur-light);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s var(--fluid), transform 0.5s var(--spring);
+      white-space: nowrap;
+      overflow: hidden;
     }
-    .btn-action:hover {
-      background: rgba(99, 102, 241, 0.25) !important;
-      border-color: rgba(99, 102, 241, 0.5) !important;
-      box-shadow: 0 0 20px rgba(99, 102, 241, 0.15) !important;
+    .glass-btn:hover {
+      background: var(--glass-bg-hover);
+      border-color: var(--glass-border-strong);
+      box-shadow: var(--shadow-glass-sm);
     }
-
-    .btn-location {
-      background: rgba(6, 182, 212, 0.15) !important;
-      border-color: rgba(6, 182, 212, 0.3) !important;
-      color: var(--accent-2) !important;
-    }
-    .btn-location:hover {
-      background: rgba(6, 182, 212, 0.25) !important;
-      border-color: rgba(6, 182, 212, 0.5) !important;
-    }
-    .btn-location.active {
-      background: rgba(16, 185, 129, 0.2) !important;
-      border-color: rgba(16, 185, 129, 0.5) !important;
-      color: var(--success) !important;
-      animation: locationPulse 2s ease-in-out infinite;
-    }
-
-    @keyframes locationPulse {
-      0%, 100% { box-shadow: 0 0 0 0 var(--success-glow); }
-      50% { box-shadow: 0 0 12px 2px var(--success-glow); }
+    .glass-btn:active {
+      transform: scale(0.96);
+      background: var(--glass-bg-active);
     }
 
-    .btn-danger {
-      background: rgba(239, 68, 68, 0.1) !important;
-      border-color: rgba(239, 68, 68, 0.25) !important;
-      color: #f87171 !important;
+    /* Tinted variants */
+    .glass-btn--accent {
+      background: rgba(0, 122, 255, 0.12);
+      border-color: rgba(0, 122, 255, 0.25);
+      color: #5AC8FA;
     }
-    .btn-danger:hover {
-      background: rgba(239, 68, 68, 0.2) !important;
-      border-color: rgba(239, 68, 68, 0.5) !important;
+    .glass-btn--accent:hover {
+      background: rgba(0, 122, 255, 0.2);
+      border-color: rgba(0, 122, 255, 0.4);
+    }
+    .glass-btn--danger {
+      background: rgba(255, 69, 58, 0.1);
+      border-color: rgba(255, 69, 58, 0.2);
+      color: #FF6961;
+    }
+    .glass-btn--danger:hover {
+      background: rgba(255, 69, 58, 0.18);
+      border-color: rgba(255, 69, 58, 0.35);
+    }
+    .glass-btn--success {
+      background: rgba(48, 209, 88, 0.1);
+      border-color: rgba(48, 209, 88, 0.2);
+      color: #30D158;
+    }
+    .glass-btn--success:hover {
+      background: rgba(48, 209, 88, 0.18);
+      border-color: rgba(48, 209, 88, 0.35);
+    }
+    .glass-btn--success.active {
+      background: rgba(48, 209, 88, 0.18);
+      border-color: rgba(48, 209, 88, 0.4);
+      box-shadow: 0 0 16px rgba(48, 209, 88, 0.15);
+      animation: activePulse 2.5s ease-in-out infinite;
     }
 
-    /* ========== Live Badge ========== */
-    .refresh-badge {
-      font-size: 0.65rem;
+    @keyframes activePulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(48, 209, 88, 0.15); }
+      50% { box-shadow: 0 0 14px 2px rgba(48, 209, 88, 0.2); }
+    }
+
+    /* Live badge */
+    .live-badge {
+      font-size: 0.6rem;
       font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
       color: var(--success);
       padding: 4px 10px;
-      background: rgba(16, 185, 129, 0.1);
-      border-radius: 20px;
-      border: 1px solid rgba(16, 185, 129, 0.2);
+      background: rgba(48, 209, 88, 0.08);
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(48, 209, 88, 0.15);
       display: flex;
       align-items: center;
       gap: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
     }
-    .refresh-dot {
-      width: 6px;
-      height: 6px;
+    .live-dot {
+      width: 5px; height: 5px;
       border-radius: 50%;
       background: var(--success);
-      animation: pulse 2s ease-in-out infinite;
+      animation: liveDot 2s ease-in-out infinite;
     }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(0.8); }
+    @keyframes liveDot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
     }
 
-    /* ========== Main Layout ========== */
+    /* ============================================================
+       MAIN LAYOUT
+       ============================================================ */
     .main-container {
       display: flex;
       flex: 1;
@@ -233,285 +295,280 @@
       position: relative;
     }
 
-    /* ========== Sidebar ========== */
+    /* ============================================================
+       SIDEBAR — Glass Panel
+       ============================================================ */
     .sidebar {
       width: var(--sidebar-width);
       min-width: 320px;
-      background: var(--bg-secondary);
+      background: rgba(10, 15, 30, 0.75);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
       padding: 16px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
       gap: 14px;
-      border-right: 1px solid var(--border-subtle);
-      position: relative;
+      border-right: 1px solid var(--glass-border);
       z-index: 5;
     }
 
-    /* ========== Search Box ========== */
+    /* ========== Search — Glass Input ========== */
     .search-container {
       position: relative;
     }
     .search-icon {
       position: absolute;
-      left: 14px;
-      top: 50%;
+      left: 14px; top: 50%;
       transform: translateY(-50%);
-      color: var(--text-muted);
+      color: var(--text-tertiary);
       font-size: 0.85rem;
       pointer-events: none;
       z-index: 1;
     }
-    .search-container input {
+    .glass-input {
       width: 100%;
-      padding: 12px 14px 12px 38px;
+      padding: 12px 16px 12px 38px;
       border-radius: var(--radius-md);
-      border: 1px solid var(--border-glow);
-      background: var(--bg-glass);
+      border: 1px solid var(--glass-border);
+      background: var(--glass-bg);
+      backdrop-filter: var(--glass-blur-light);
+      -webkit-backdrop-filter: var(--glass-blur-light);
       color: var(--text-primary);
-      font-family: 'Inter', sans-serif;
+      font-family: inherit;
       font-size: 0.85rem;
       font-weight: 400;
-      transition: all var(--transition-fast);
+      transition: all 0.3s var(--fluid);
     }
-    .search-container input::placeholder {
-      color: var(--text-muted);
-    }
-    .search-container input:focus {
+    .glass-input::placeholder { color: var(--text-tertiary); }
+    .glass-input:focus {
       outline: none;
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-glow), 0 0 20px var(--accent-glow);
-      background: rgba(255,255,255,0.04);
+      box-shadow: 0 0 0 3px var(--accent-glow), 0 0 24px rgba(0, 122, 255, 0.08);
+      background: rgba(255, 255, 255, 0.06);
     }
 
-    /* ========== Location Status Card ========== */
+    /* ========== Location Card ========== */
     .location-card {
-      background: var(--bg-glass);
-      border: 1px solid var(--border-subtle);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
       border-radius: var(--radius-md);
       padding: 12px 14px;
       display: flex;
       align-items: center;
       gap: 12px;
-      font-size: 0.82rem;
-      transition: all var(--transition-base);
+      transition: all 0.3s var(--fluid);
     }
     .location-card.tracking {
-      border-color: rgba(6, 182, 212, 0.3);
-      background: rgba(6, 182, 212, 0.05);
+      border-color: rgba(0, 122, 255, 0.3);
+      background: rgba(0, 122, 255, 0.06);
     }
-    .location-pulse {
-      width: 12px;
-      height: 12px;
+    .loc-dot {
+      width: 12px; height: 12px;
       border-radius: 50%;
-      background: var(--accent-2);
+      background: var(--accent);
       flex-shrink: 0;
       position: relative;
     }
-    .location-pulse::after {
+    .loc-dot::after {
       content: '';
       position: absolute;
       inset: -5px;
       border-radius: 50%;
-      border: 2px solid var(--accent-2);
-      animation: locPulse 1.5s ease-out infinite;
+      border: 2px solid var(--accent);
+      animation: locRing 1.5s ease-out infinite;
     }
-    @keyframes locPulse {
-      0% { transform: scale(1); opacity: 0.6; }
+    @keyframes locRing {
+      0% { transform: scale(1); opacity: 0.5; }
       100% { transform: scale(2); opacity: 0; }
     }
-    .location-info { flex: 1; min-width: 0; }
-    .location-info .loc-label {
-      font-size: 0.6rem;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: var(--text-muted);
-      font-weight: 600;
+    .loc-info { flex: 1; min-width: 0; }
+    .loc-info .loc-label {
+      font-size: 0.6rem; text-transform: uppercase;
+      letter-spacing: 1.2px; color: var(--text-tertiary); font-weight: 600;
     }
-    .location-info .loc-coords {
+    .loc-info .loc-coords {
       font-variant-numeric: tabular-nums;
-      color: var(--text-primary);
-      font-size: 0.8rem;
-      font-weight: 500;
+      color: var(--text-primary); font-size: 0.8rem; font-weight: 500;
     }
-    .location-info .loc-accuracy {
-      font-size: 0.7rem;
-      color: var(--text-muted);
+    .loc-info .loc-accuracy { font-size: 0.7rem; color: var(--text-tertiary); }
+    .btn-loc-stop {
+      background: none; border: none;
+      color: var(--text-tertiary); cursor: pointer;
+      font-size: 0.8rem; padding: 6px;
+      border-radius: var(--radius-xs);
+      transition: all 0.2s var(--fluid);
     }
-    .btn-locate-stop {
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      font-size: 0.85rem;
-      padding: 4px 8px;
-      border-radius: var(--radius-sm);
-      transition: all var(--transition-fast);
-    }
-    .btn-locate-stop:hover { color: var(--danger); background: rgba(239,68,68,0.1); }
+    .btn-loc-stop:hover { color: var(--danger); background: rgba(255,69,58,0.1); }
 
-    /* ========== Time Card ========== */
+    /* ============================================================
+       TIME CARD — Hero Glass Card
+       ============================================================ */
     .time-card {
       position: relative;
       border-radius: var(--radius-xl);
       padding: 28px 24px;
       text-align: center;
       overflow: hidden;
-      transition: all var(--transition-slow);
-      border: 1px solid var(--border-subtle);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow-glass);
+      transition: all 0.5s var(--fluid);
     }
+    /* Inner specular highlight */
     .time-card::before {
       content: '';
       position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(6, 182, 212, 0.08) 100%);
-      z-index: 0;
-      transition: all var(--transition-slow);
+      top: 0; left: 15%; right: 15%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      pointer-events: none;
     }
-    .time-card.has-route::before {
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(6, 182, 212, 0.08) 100%);
+    /* Subtle gradient tint — neutral */
+    .time-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0, 122, 255, 0.04), rgba(90, 200, 250, 0.04));
+      pointer-events: none;
+      transition: all 0.5s var(--fluid);
+      z-index: 0;
+    }
+    .time-card.has-route::after {
+      background: linear-gradient(135deg, rgba(48, 209, 88, 0.08), rgba(90, 200, 250, 0.05));
     }
     .time-card.has-route {
-      border-color: rgba(16, 185, 129, 0.2);
+      border-color: rgba(48, 209, 88, 0.15);
     }
     .time-card > * { position: relative; z-index: 1; }
 
-    .time-card-label {
-      font-size: 0.6rem;
-      text-transform: uppercase;
-      letter-spacing: 2.5px;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-      font-weight: 600;
+    .time-label {
+      font-size: 0.6rem; text-transform: uppercase;
+      letter-spacing: 2.5px; color: var(--text-tertiary);
+      margin-bottom: 10px; font-weight: 600;
     }
-    .time-remaining {
-      font-size: 3rem;
-      font-weight: 800;
+    .time-value {
+      font-size: 3.2rem; font-weight: 700;
       color: var(--text-primary);
-      line-height: 1;
-      letter-spacing: -0.03em;
+      line-height: 1; letter-spacing: -0.04em;
       font-variant-numeric: tabular-nums;
-      transition: color var(--transition-base);
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      transition: all 0.5s var(--fluid);
     }
-    .time-card.has-route .time-remaining {
-      background: linear-gradient(135deg, #34d399 0%, #06b6d4 100%);
+    .time-card.has-route .time-value {
+      background: linear-gradient(135deg, #30D158, #5AC8FA);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      text-shadow: none;
+      filter: drop-shadow(0 2px 8px rgba(48, 209, 88, 0.2));
     }
-    .time-remaining-sub {
-      font-size: 0.78rem;
-      color: var(--text-secondary);
-      margin-top: 8px;
-      font-weight: 400;
+    .time-sub {
+      font-size: 0.78rem; color: var(--text-secondary);
+      margin-top: 8px; font-weight: 400;
     }
     .time-eta {
-      font-size: 1rem;
-      color: var(--accent-2);
-      margin-top: 8px;
-      font-weight: 600;
-      letter-spacing: -0.01em;
+      font-size: 1rem; color: #5AC8FA;
+      margin-top: 8px; font-weight: 600;
     }
     .time-updated {
-      font-size: 0.6rem;
-      color: var(--text-muted);
-      margin-top: 8px;
-      font-weight: 500;
+      font-size: 0.6rem; color: var(--text-tertiary);
+      margin-top: 8px; font-weight: 500;
     }
 
-    /* ========== Traffic Badge ========== */
+    /* Traffic badges */
     .traffic-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 0.65rem;
-      font-weight: 600;
-      margin-top: 8px;
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 12px; border-radius: var(--radius-pill);
+      font-size: 0.65rem; font-weight: 600; margin-top: 8px;
       letter-spacing: 0.3px;
     }
     .traffic-badge::before {
-      content: '';
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
+      content: ''; width: 6px; height: 6px; border-radius: 50%;
     }
     .traffic-badge.green {
-      background: rgba(16, 185, 129, 0.12);
-      color: #34d399;
-      border: 1px solid rgba(16, 185, 129, 0.2);
+      background: rgba(48, 209, 88, 0.1); color: #30D158;
+      border: 1px solid rgba(48, 209, 88, 0.2);
     }
-    .traffic-badge.green::before { background: #34d399; }
+    .traffic-badge.green::before { background: #30D158; }
     .traffic-badge.yellow {
-      background: rgba(245, 158, 11, 0.12);
-      color: #fbbf24;
-      border: 1px solid rgba(245, 158, 11, 0.2);
+      background: rgba(255, 159, 10, 0.1); color: #FF9F0A;
+      border: 1px solid rgba(255, 159, 10, 0.2);
     }
-    .traffic-badge.yellow::before { background: #fbbf24; }
+    .traffic-badge.yellow::before { background: #FF9F0A; }
     .traffic-badge.red {
-      background: rgba(239, 68, 68, 0.12);
-      color: #f87171;
-      border: 1px solid rgba(239, 68, 68, 0.2);
+      background: rgba(255, 69, 58, 0.1); color: #FF6961;
+      border: 1px solid rgba(255, 69, 58, 0.2);
     }
-    .traffic-badge.red::before { background: #f87171; }
+    .traffic-badge.red::before { background: #FF453A; }
 
-    /* ========== Stats Grid ========== */
+    /* Optimize badge */
+    .optimize-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 10px; border-radius: var(--radius-pill);
+      font-size: 0.6rem; font-weight: 600;
+      background: rgba(0, 122, 255, 0.08); color: #5AC8FA;
+      border: 1px solid rgba(0, 122, 255, 0.15);
+      margin-top: 6px;
+    }
+
+    /* ============================================================
+       STATS GRID — Mini Glass Cards
+       ============================================================ */
     .stats-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
     }
     .stat-card {
-      background: var(--bg-glass);
+      background: var(--glass-bg);
       border-radius: var(--radius-md);
-      padding: 14px 12px;
+      padding: 14px 10px;
       text-align: center;
-      border: 1px solid var(--border-subtle);
-      transition: all var(--transition-fast);
+      border: 1px solid var(--glass-border);
+      transition: all 0.3s var(--fluid), transform 0.5s var(--spring);
       position: relative;
       overflow: hidden;
     }
+    /* Specular top edge */
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 20%; right: 20%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    }
     .stat-card:hover {
-      border-color: var(--border-glow);
-      background: var(--bg-glass-hover);
-      transform: translateY(-1px);
+      background: var(--glass-bg-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-glass-sm);
     }
-    .stat-icon {
-      font-size: 0.9rem;
-      margin-bottom: 6px;
-      opacity: 0.7;
-    }
+    .stat-icon { font-size: 0.85rem; margin-bottom: 4px; opacity: 0.6; }
     .stat-value {
-      font-size: 1.2rem;
-      font-weight: 700;
+      font-size: 1.15rem; font-weight: 700;
       color: var(--text-primary);
       font-variant-numeric: tabular-nums;
       letter-spacing: -0.02em;
     }
     .stat-label {
-      font-size: 0.6rem;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: var(--text-muted);
-      margin-top: 4px;
-      font-weight: 600;
+      font-size: 0.55rem; text-transform: uppercase;
+      letter-spacing: 1.5px; color: var(--text-tertiary);
+      margin-top: 3px; font-weight: 600;
     }
 
-    /* ========== Leg Details ========== */
+    /* ============================================================
+       LEG DETAILS
+       ============================================================ */
     .leg-details {
-      background: var(--bg-glass);
+      background: var(--glass-bg);
       border-radius: var(--radius-md);
       padding: 14px;
-      border: 1px solid var(--border-subtle);
+      border: 1px solid var(--glass-border);
     }
-    .leg-details h3 {
-      font-size: 0.6rem;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: var(--text-muted);
-      margin-bottom: 10px;
-      font-weight: 600;
+    .section-title {
+      font-size: 0.6rem; text-transform: uppercase;
+      letter-spacing: 1.5px; color: var(--text-tertiary);
+      font-weight: 600; margin-bottom: 10px;
     }
     .leg-item {
       display: flex;
@@ -519,460 +576,334 @@
       align-items: center;
       padding: 8px 0;
       font-size: 0.8rem;
-      border-bottom: 1px solid var(--border-subtle);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
     }
     .leg-item:last-child { border-bottom: none; }
-    .leg-item-label {
-      color: var(--text-secondary);
-      font-weight: 500;
-    }
+    .leg-item-label { color: var(--text-secondary); font-weight: 500; }
     .leg-item-value {
-      color: var(--text-primary);
-      font-weight: 600;
+      color: var(--text-primary); font-weight: 600;
       font-variant-numeric: tabular-nums;
     }
 
-    /* ========== Waypoints Section ========== */
-    .waypoints-section {
-      flex: 1;
-      overflow-y: auto;
-      min-height: 0;
-    }
+    /* ============================================================
+       WAYPOINTS
+       ============================================================ */
+    .waypoints-section { flex: 1; overflow-y: auto; min-height: 0; }
     .waypoints-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 10px;
+      display: flex; align-items: center;
+      justify-content: space-between; margin-bottom: 10px;
     }
-    .waypoints-header h3 {
-      font-size: 0.6rem;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: var(--text-muted);
-      font-weight: 600;
-    }
-    .waypoints-count {
-      font-size: 0.6rem;
-      color: var(--text-muted);
-      background: var(--bg-glass);
-      padding: 2px 8px;
-      border-radius: 10px;
-      font-weight: 600;
-      border: 1px solid var(--border-subtle);
+    .wp-count {
+      font-size: 0.6rem; color: var(--text-tertiary);
+      background: var(--glass-bg); padding: 2px 8px;
+      border-radius: var(--radius-pill); font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.06);
     }
 
-    /* Waypoint Timeline */
-    .waypoint-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
+    .wp-item {
+      display: flex; align-items: center; gap: 12px;
       padding: 10px 12px;
-      background: var(--bg-glass);
+      background: var(--glass-bg);
       border-radius: var(--radius-sm);
       margin-bottom: 6px;
-      border: 1px solid var(--border-subtle);
-      font-size: 0.82rem;
-      transition: all var(--transition-fast);
-      position: relative;
-      animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+      border: 1px solid rgba(255,255,255,0.05);
+      transition: all 0.3s var(--fluid), transform 0.5s var(--spring);
+      animation: wpSlideIn 0.35s var(--fluid) both;
     }
-    .waypoint-item:hover {
-      background: var(--bg-glass-hover);
-      border-color: var(--border-glow);
+    .wp-item:hover {
+      background: var(--glass-bg-hover);
+      border-color: var(--glass-border);
     }
-
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateX(-10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
+    @keyframes wpSlideIn {
+      from { opacity: 0; transform: translateX(-12px); }
+      to { opacity: 1; transform: translateX(0); }
     }
 
-    .waypoint-marker {
-      width: 28px;
-      height: 28px;
+    .wp-marker {
+      width: 28px; height: 28px;
       border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.65rem;
-      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem; font-weight: 700;
       flex-shrink: 0;
-      position: relative;
     }
-    .waypoint-marker.origin {
-      background: rgba(16, 185, 129, 0.15);
-      color: var(--success);
-      border: 2px solid rgba(16, 185, 129, 0.4);
+    .wp-marker.origin {
+      background: rgba(48, 209, 88, 0.12); color: #30D158;
+      border: 2px solid rgba(48, 209, 88, 0.35);
     }
-    .waypoint-marker.via {
-      background: rgba(99, 102, 241, 0.15);
-      color: var(--accent-light);
-      border: 2px solid rgba(99, 102, 241, 0.3);
+    .wp-marker.via {
+      background: rgba(0, 122, 255, 0.12); color: #5AC8FA;
+      border: 2px solid rgba(0, 122, 255, 0.25);
     }
-    .waypoint-marker.destination {
-      background: rgba(239, 68, 68, 0.15);
-      color: #f87171;
-      border: 2px solid rgba(239, 68, 68, 0.3);
+    .wp-marker.dest {
+      background: rgba(255, 69, 58, 0.12); color: #FF6961;
+      border: 2px solid rgba(255, 69, 58, 0.25);
     }
 
-    .waypoint-content {
-      flex: 1;
-      min-width: 0;
-    }
-    .waypoint-type {
-      font-size: 0.55rem;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: var(--text-muted);
+    .wp-content { flex: 1; min-width: 0; }
+    .wp-type {
+      font-size: 0.5rem; text-transform: uppercase;
+      letter-spacing: 1.5px; color: var(--text-tertiary);
       font-weight: 600;
-      margin-bottom: 1px;
     }
-    .waypoint-name {
-      font-size: 0.8rem;
-      font-weight: 500;
+    .wp-name {
+      font-size: 0.8rem; font-weight: 500;
       color: var(--text-primary);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
 
-    .waypoint-remove {
-      margin-left: auto;
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      font-size: 0.75rem;
-      padding: 6px;
-      border-radius: var(--radius-sm);
-      transition: all var(--transition-fast);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 28px;
-      height: 28px;
-      flex-shrink: 0;
+    .wp-remove {
+      background: none; border: none;
+      color: var(--text-tertiary); cursor: pointer;
+      font-size: 0.7rem; padding: 6px;
+      border-radius: var(--radius-xs);
+      width: 28px; height: 28px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s var(--fluid);
     }
-    .waypoint-remove:hover {
-      color: var(--danger);
-      background: rgba(239, 68, 68, 0.1);
-    }
+    .wp-remove:hover { color: var(--danger); background: rgba(255,69,58,0.1); }
 
-    /* ========== Instructions ========== */
+    /* Empty state */
     .instructions {
-      background: var(--bg-glass);
+      background: var(--glass-bg);
       border: 1px dashed rgba(255,255,255,0.08);
       border-radius: var(--radius-md);
-      padding: 20px;
+      padding: 24px 20px;
       text-align: center;
       color: var(--text-secondary);
       font-size: 0.82rem;
-      line-height: 1.7;
+      line-height: 1.8;
     }
-    .instructions strong { color: var(--accent-light); font-weight: 600; }
-    .instructions .instruction-icon {
-      font-size: 2rem;
-      display: block;
-      margin-bottom: 12px;
-      opacity: 0.5;
+    .instructions strong { color: #5AC8FA; font-weight: 600; }
+    .instructions .big-icon {
+      font-size: 2rem; display: block;
+      margin-bottom: 12px; opacity: 0.4;
     }
 
-    /* ========== Map ========== */
-    #map {
-      flex: 1;
-      min-height: 400px;
-    }
+    /* ============================================================
+       MAP
+       ============================================================ */
+    #map { flex: 1; min-height: 400px; }
 
-    /* ========== Loading ========== */
+    /* ============================================================
+       LOADING OVERLAY
+       ============================================================ */
     .loading-overlay {
-      position: fixed;
-      inset: 0;
-      background: var(--bg-primary);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      position: fixed; inset: 0;
+      background: var(--scene-bg);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
       z-index: 9999;
     }
     .loading-content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 20px;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 24px;
     }
     .loading-logo {
-      width: 56px;
-      height: 56px;
+      width: 56px; height: 56px;
       border-radius: var(--radius-lg);
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      background: linear-gradient(135deg, #007AFF, #5AC8FA);
+      display: flex; align-items: center; justify-content: center;
       font-size: 1.5rem;
-      box-shadow: 0 0 40px var(--accent-glow);
-      animation: loadingFloat 2s ease-in-out infinite;
+      box-shadow: 0 0 48px rgba(0, 122, 255, 0.3);
+      animation: logoFloat 2.5s ease-in-out infinite;
     }
-    @keyframes loadingFloat {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
+    @keyframes logoFloat {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-6px) scale(1.02); }
     }
     .loading-spinner {
-      width: 36px;
-      height: 36px;
-      border: 3px solid rgba(255,255,255,0.05);
-      border-top: 3px solid var(--accent);
-      border-right: 3px solid var(--accent-2);
+      width: 32px; height: 32px;
+      border: 2.5px solid rgba(255,255,255,0.06);
+      border-top-color: var(--accent);
+      border-right-color: #5AC8FA;
       border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+      animation: spin 0.7s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .loading-text {
-      color: var(--text-secondary);
-      font-size: 0.85rem;
-      font-weight: 500;
-    }
+    .loading-text { color: var(--text-secondary); font-size: 0.85rem; font-weight: 500; }
 
     .error-message {
-      background: rgba(239, 68, 68, 0.08);
-      border: 1px solid rgba(239, 68, 68, 0.2);
+      background: rgba(255, 69, 58, 0.06);
+      border: 1px solid rgba(255, 69, 58, 0.15);
       border-radius: var(--radius-lg);
-      padding: 24px;
-      text-align: center;
-      max-width: 400px;
+      padding: 28px; text-align: center; max-width: 400px;
     }
-    .error-message h2 {
-      color: #f87171;
-      font-size: 1.1rem;
-      font-weight: 700;
-    }
-    .error-message p {
-      color: var(--text-secondary);
-      font-size: 0.85rem;
-      margin-top: 8px;
-      line-height: 1.5;
-    }
+    .error-message h2 { color: #FF6961; font-size: 1.1rem; font-weight: 700; }
+    .error-message p { color: var(--text-secondary); font-size: 0.85rem; margin-top: 8px; line-height: 1.5; }
     .error-message code {
-      background: rgba(255,255,255,0.05);
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 0.8rem;
-      color: var(--accent-light);
+      background: rgba(255,255,255,0.05); padding: 2px 6px;
+      border-radius: 4px; font-size: 0.8rem; color: #5AC8FA;
     }
 
-    /* ========== Mobile Toggle Button ========== */
-    .mobile-panel-toggle {
+    /* ============================================================
+       MOBILE — Floating Glass Bottom Sheet
+       ============================================================ */
+    .mobile-toggle {
       display: none;
       position: fixed;
-      bottom: 24px;
-      left: 50%;
+      bottom: 24px; left: 50%;
       transform: translateX(-50%);
       z-index: 100;
-      background: rgba(10, 10, 26, 0.85);
-      backdrop-filter: blur(16px) saturate(1.5);
-      -webkit-backdrop-filter: blur(16px) saturate(1.5);
+      background: rgba(10, 15, 30, 0.7);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
       color: var(--text-primary);
-      border: 1px solid var(--border-glow);
-      border-radius: 50px;
+      border: 1px solid var(--glass-border-strong);
+      border-radius: var(--radius-pill);
       padding: 12px 24px;
-      font-family: 'Inter', sans-serif;
+      font-family: inherit;
       font-size: 0.85rem;
       font-weight: 600;
-      box-shadow: var(--shadow-lg), 0 0 30px rgba(99, 102, 241, 0.1);
+      box-shadow: var(--shadow-float);
       cursor: pointer;
-      transition: all var(--transition-base);
+      transition: all 0.4s var(--fluid), transform 0.5s var(--spring);
     }
-    .mobile-panel-toggle:active {
+    .mobile-toggle:active {
       transform: translateX(-50%) scale(0.96);
     }
-    .mobile-panel-toggle .toggle-time {
-      font-variant-numeric: tabular-nums;
-    }
-    .mobile-panel-toggle .toggle-icon {
-      margin-right: 8px;
-    }
+    .toggle-time { font-variant-numeric: tabular-nums; }
 
-    /* ========== Responsive — Mobile ========== */
     @media (max-width: 768px) {
       body { height: 100dvh; }
 
       header {
-        padding: 6px 10px;
+        padding: 0 10px;
+        height: 48px;
         gap: 6px;
-        flex-wrap: nowrap;
       }
-      .brand {
-        display: flex;
-      }
-      .brand-icon {
-        width: 28px;
-        height: 28px;
-        font-size: 0.75rem;
-      }
+      header::after { display: none; }
+      .brand-icon { width: 28px; height: 28px; font-size: 0.8rem; }
       .brand-text { display: none; }
 
       .controls {
         gap: 4px;
-        flex-wrap: nowrap;
-        justify-content: flex-end;
-        flex: 1;
         overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
       }
       .controls::-webkit-scrollbar { display: none; }
       .control-group { gap: 4px; flex-shrink: 0; }
-      .controls select, .controls button {
-        padding: 6px 8px;
-        font-size: 0.7rem;
-        border-radius: 6px;
-        min-height: 32px;
-        white-space: nowrap;
+      .glass-select {
+        padding: 6px 24px 6px 10px;
+        font-size: 0.72rem;
+        min-height: 34px;
+        background-position: right 7px center;
       }
-      /* Hide button text labels on mobile, show icons only */
-      #btn-location { font-size: 0; }
-      #btn-location::before { content: '\1F4CD'; font-size: 0.8rem; }
-      #btn-reverse { font-size: 0; }
-      #btn-reverse::before { content: '\21C4'; font-size: 0.8rem; }
-      #btn-clear { font-size: 0; }
-      #btn-clear::before { content: '\2715'; font-size: 0.8rem; }
-      #btn-location.active { font-size: 0; }
-      #btn-location.active::before { content: '\1F4CD'; font-size: 0.8rem; }
-      .refresh-badge { display: none !important; }
+      .glass-btn {
+        padding: 6px 12px;
+        font-size: 0.72rem;
+        min-height: 34px;
+      }
+      .live-badge { display: none !important; }
 
       .main-container {
         flex-direction: column-reverse;
-        position: relative;
-        flex: 1;
-        overflow: hidden;
+        position: relative; flex: 1; overflow: hidden;
       }
-
       #map {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        min-height: 0;
+        position: absolute; inset: 0;
+        width: 100%; height: 100%; min-height: 0;
       }
 
-      /* Sidebar = bottom sheet */
+      /* Bottom sheet */
       .sidebar {
         position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        width: 100%;
-        min-width: 0;
+        bottom: 0; left: 0; right: 0;
+        width: 100%; min-width: 0;
         max-height: 75dvh;
         border-right: none;
-        border-top: 1px solid var(--border-glow);
-        border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
-        padding: 8px 16px 28px;
-        gap: 12px;
-        z-index: 50;
+        border-top: 1px solid var(--glass-border-strong);
+        border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+        padding: 6px 16px 28px;
+        gap: 12px; z-index: 50;
         transform: translateY(100%);
-        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 -12px 50px rgba(0, 0, 0, 0.6);
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        background: rgba(13, 13, 26, 0.95);
-        backdrop-filter: blur(24px) saturate(1.5);
-        -webkit-backdrop-filter: blur(24px) saturate(1.5);
+        transition: transform 0.45s var(--fluid);
+        box-shadow: 0 -16px 60px rgba(0, 0, 0, 0.5);
+        background: rgba(10, 15, 30, 0.92);
+        backdrop-filter: var(--glass-blur-heavy);
+        -webkit-backdrop-filter: var(--glass-blur-heavy);
       }
-      .sidebar.open {
-        transform: translateY(0);
-      }
+      .sidebar.open { transform: translateY(0); }
 
-      /* Drag handle */
       .sidebar::before {
         content: '';
         display: block;
-        width: 36px;
-        height: 4px;
+        width: 36px; height: 4px;
         background: rgba(255,255,255,0.15);
         border-radius: 4px;
-        margin: 4px auto 8px;
+        margin: 4px auto 6px;
         flex-shrink: 0;
       }
 
-      .mobile-panel-toggle {
+      .mobile-toggle {
         display: flex;
         align-items: center;
-        gap: 0;
-        bottom: 20px;
-        padding: 11px 22px;
-        font-size: 0.82rem;
+        gap: 8px;
       }
 
-      /* Compact elements */
-      .time-card {
-        padding: 18px 16px;
-        border-radius: var(--radius-lg);
-      }
-      .time-remaining { font-size: 2.4rem; }
-      .time-card-label { font-size: 0.55rem; }
-      .time-remaining-sub { font-size: 0.72rem; }
+      .time-card { padding: 18px 16px; border-radius: var(--radius-lg); }
+      .time-value { font-size: 2.4rem; }
+      .time-label { font-size: 0.5rem; }
+      .time-sub { font-size: 0.72rem; }
       .time-eta { font-size: 0.9rem; }
 
       .stats-grid { gap: 8px; }
-      .stat-card { padding: 10px 8px; border-radius: var(--radius-sm); }
-      .stat-icon { font-size: 0.8rem; margin-bottom: 4px; }
-      .stat-value { font-size: 1rem; }
-      .stat-label { font-size: 0.55rem; }
+      .stat-card { padding: 10px 6px; }
+      .stat-value { font-size: 0.95rem; }
+      .stat-label { font-size: 0.5rem; }
 
-      .search-container input {
-        padding: 12px 12px 12px 36px;
-        font-size: 0.9rem;
-        border-radius: var(--radius-md);
-      }
-
-      .waypoint-item { padding: 8px 10px; font-size: 0.78rem; }
-      .waypoint-marker { width: 24px; height: 24px; font-size: 0.6rem; }
-      .waypoint-remove {
-        width: 32px;
-        height: 32px;
-        font-size: 0.85rem;
-      }
-
-      .location-card { padding: 10px 12px; }
-      .instructions { padding: 14px; font-size: 0.78rem; }
+      .glass-input { padding: 11px 14px 11px 36px; font-size: 0.88rem; }
+      .wp-item { padding: 8px 10px; }
+      .wp-marker { width: 24px; height: 24px; font-size: 0.6rem; }
+      .wp-remove { width: 32px; height: 32px; }
+      .instructions { padding: 16px; font-size: 0.78rem; }
       .leg-details { padding: 12px; }
     }
 
-    /* ========== Extra small phones ========== */
     @media (max-width: 380px) {
-      .controls select, .controls button { font-size: 0; padding: 6px 8px; min-height: 30px; }
-      .controls select { font-size: 0.65rem; }
-      .time-remaining { font-size: 2rem; }
-      .stat-value { font-size: 0.9rem; }
+      .glass-select { font-size: 0.65rem; padding: 4px 18px 4px 6px; }
+      .glass-btn { font-size: 0.65rem; padding: 4px 8px; }
+      .time-value { font-size: 2rem; }
+      .stat-value { font-size: 0.85rem; }
     }
 
-    /* ========== Landscape phone ========== */
     @media (max-width: 768px) and (orientation: landscape) {
-      header { padding: 4px 10px; }
-      .controls select, .controls button { min-height: 30px; padding: 4px 8px; }
+      header { height: 40px; }
       .sidebar { max-height: 85dvh; }
     }
 
-    /* ========== Fade-in animation ========== */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
+    /* ============================================================
+       ANIMATIONS
+       ============================================================ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .fade-in { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) both; }
-    .fade-in-delay-1 { animation-delay: 0.05s; }
-    .fade-in-delay-2 { animation-delay: 0.1s; }
-    .fade-in-delay-3 { animation-delay: 0.15s; }
-    .fade-in-delay-4 { animation-delay: 0.2s; }
+    .fade-up { animation: fadeUp 0.5s var(--fluid) both; }
+    .fade-up-d1 { animation-delay: 0.05s; }
+    .fade-up-d2 { animation-delay: 0.1s; }
+    .fade-up-d3 { animation-delay: 0.15s; }
+    .fade-up-d4 { animation-delay: 0.2s; }
+
+    /* Accessibility */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+    @media (prefers-reduced-transparency: reduce) {
+      .sidebar, header, .mobile-toggle {
+        background: rgba(10, 15, 30, 0.95);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+      }
+    }
   </style>
 </head>
 <body>
 
-  <!-- Loading Screen -->
+  <!-- Loading -->
   <div class="loading-overlay" id="loading-overlay">
     <div class="loading-content">
       <div class="loading-logo">&#x1F30D;</div>
@@ -989,26 +920,26 @@
     </div>
     <div class="controls">
       <div class="control-group">
-        <select id="travel-mode" title="Travel mode">
+        <select class="glass-select" id="travel-mode" title="Travel mode">
           <option value="DRIVING">&#x1F697; Driving</option>
           <option value="WALKING">&#x1F6B6; Walking</option>
           <option value="BICYCLING">&#x1F6B2; Bicycling</option>
           <option value="TRANSIT">&#x1F68C; Transit</option>
         </select>
-        <select id="traffic-model" title="Traffic model (driving only)">
+        <select class="glass-select" id="traffic-model" title="Traffic model">
           <option value="best_guess">Best Guess</option>
           <option value="pessimistic">Pessimistic</option>
           <option value="optimistic">Optimistic</option>
         </select>
       </div>
       <div class="control-group">
-        <button class="btn-location" id="btn-location">&#x1F4CD; Location</button>
-        <button class="btn-action" id="btn-reverse">&#x21C4; Reverse</button>
-        <button class="btn-danger" id="btn-clear">&#x2715; Clear</button>
+        <button class="glass-btn glass-btn--success" id="btn-location">&#x1F4CD; Location</button>
+        <button class="glass-btn glass-btn--accent" id="btn-reverse">&#x21C4; Reverse</button>
+        <button class="glass-btn glass-btn--danger" id="btn-clear">&#x2715; Clear</button>
       </div>
-      <div class="refresh-badge" id="refresh-badge" style="display:none;">
-        <span class="refresh-dot"></span>
-        <span id="refresh-text">Live</span>
+      <div class="live-badge" id="live-badge" style="display:none;">
+        <span class="live-dot"></span>
+        <span id="live-text">Live</span>
       </div>
     </div>
   </header>
@@ -1016,38 +947,38 @@
   <!-- Main -->
   <div class="main-container">
 
-    <!-- Sidebar -->
     <div class="sidebar">
 
       <!-- Search -->
-      <div class="search-container fade-in">
+      <div class="search-container fade-up">
         <span class="search-icon">&#x1F50D;</span>
-        <input type="text" id="place-search" placeholder="Search for a place...">
+        <input class="glass-input" type="text" id="place-search" placeholder="Search for a place...">
       </div>
 
-      <!-- Location Status -->
+      <!-- Location -->
       <div class="location-card" id="location-card" style="display:none;">
-        <div class="location-pulse"></div>
-        <div class="location-info">
+        <div class="loc-dot"></div>
+        <div class="loc-info">
           <div class="loc-label">Your Location</div>
           <div class="loc-coords" id="loc-coords">Acquiring...</div>
           <div class="loc-accuracy" id="loc-accuracy"></div>
         </div>
-        <button class="btn-locate-stop" id="btn-locate-stop" title="Stop tracking">&#x2715;</button>
+        <button class="btn-loc-stop" id="btn-loc-stop" title="Stop">&#x2715;</button>
       </div>
 
-      <!-- Travel Time -->
-      <div class="time-card fade-in fade-in-delay-1" id="time-card">
-        <div class="time-card-label">Estimated Travel Time</div>
-        <div class="time-remaining" id="time-remaining">&mdash;</div>
-        <div class="time-remaining-sub" id="time-remaining-sub">Add at least 2 points to see travel time</div>
+      <!-- Time Card -->
+      <div class="time-card fade-up fade-up-d1" id="time-card">
+        <div class="time-label">Estimated Travel Time</div>
+        <div class="time-value" id="time-value">&mdash;</div>
+        <div class="time-sub" id="time-sub">Add at least 2 points to see travel time</div>
         <div class="time-eta" id="time-eta"></div>
         <div id="traffic-indicator"></div>
+        <div id="optimize-indicator"></div>
         <div class="time-updated" id="time-updated"></div>
       </div>
 
       <!-- Stats -->
-      <div class="stats-grid fade-in fade-in-delay-2">
+      <div class="stats-grid fade-up fade-up-d2">
         <div class="stat-card">
           <div class="stat-icon">&#x23F1;</div>
           <div class="stat-value" id="total-duration">&mdash;</div>
@@ -1070,36 +1001,35 @@
         </div>
       </div>
 
-      <!-- Leg Breakdown -->
-      <div class="leg-details fade-in fade-in-delay-3" id="leg-details" style="display:none;">
-        <h3>Route Legs</h3>
+      <!-- Legs -->
+      <div class="leg-details fade-up fade-up-d3" id="leg-details" style="display:none;">
+        <div class="section-title">Route Legs</div>
         <div id="leg-list"></div>
       </div>
 
       <!-- Waypoints -->
-      <div class="waypoints-section fade-in fade-in-delay-4">
+      <div class="waypoints-section fade-up fade-up-d4">
         <div class="waypoints-header">
-          <h3>Waypoints</h3>
-          <span class="waypoints-count" id="waypoints-count">0 points</span>
+          <div class="section-title" style="margin-bottom:0;">Waypoints</div>
+          <span class="wp-count" id="wp-count">0 points</span>
         </div>
-        <div id="waypoints-list">
+        <div id="wp-list">
           <div class="instructions">
-            <span class="instruction-icon">&#x1F5FA;</span>
+            <span class="big-icon">&#x1F5FA;</span>
             <strong>Click on the map</strong> to add waypoints.<br>
             Add at least <strong>2 points</strong> to create a route.<br>
-            Drag the route to adjust the path.
+            The route is automatically optimized for the best path.
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Map -->
     <div id="map"></div>
   </div>
 
-  <!-- Mobile floating button -->
-  <button class="mobile-panel-toggle" id="mobile-toggle">
-    <span class="toggle-icon">&#x1F4CB;</span>
+  <!-- Mobile toggle -->
+  <button class="mobile-toggle" id="mobile-toggle">
+    <span>&#x1F4CB;</span>
     <span class="toggle-time" id="toggle-time">Route Details</span>
   </button>
 
@@ -1115,8 +1045,9 @@
     let totalDistanceMeters = 0;
     let lastRouteUpdate = null;
     let liveRefreshInterval = null;
+    let lastOptimizedOrder = null;
 
-    // Geolocation state
+    // Geolocation
     let locationWatchId = null;
     let locationMarker = null;
     let locationAccuracyCircle = null;
@@ -1125,7 +1056,7 @@
     const REFRESH_INTERVAL_MS = 60 * 1000;
 
     // ==========================================
-    // Load Google Maps API key from server
+    // Load API
     // ==========================================
     async function loadApp() {
       try {
@@ -1141,7 +1072,7 @@
           <div class="error-message">
             <h2>Configuration Error</h2>
             <p>${e.message}</p>
-            <p>Make sure you've set <code>GOOGLE_MAPS_API_KEY</code> in your <code>.env</code> file and restarted the server.</p>
+            <p>Set <code>GOOGLE_MAPS_API_KEY</code> in your <code>.env</code> file and restart.</p>
           </div>`;
       }
     }
@@ -1154,8 +1085,8 @@
       script.onerror = () => {
         document.getElementById('loading-overlay').innerHTML = `
           <div class="error-message">
-            <h2>Google Maps Failed to Load</h2>
-            <p>Check your API key and ensure the Maps JavaScript API is enabled.</p>
+            <h2>Google Maps Failed</h2>
+            <p>Check your API key and ensure Maps JavaScript API is enabled.</p>
           </div>`;
       };
       document.head.appendChild(script);
@@ -1166,8 +1097,7 @@
     // ==========================================
     function updateTrafficModelVisibility() {
       const mode = document.getElementById('travel-mode').value;
-      const trafficSelect = document.getElementById('traffic-model');
-      trafficSelect.style.display = mode === 'DRIVING' ? '' : 'none';
+      document.getElementById('traffic-model').style.display = mode === 'DRIVING' ? '' : 'none';
     }
 
     // ==========================================
@@ -1179,7 +1109,7 @@
       map = new google.maps.Map(document.getElementById('map'), {
         center: { lat: 41.0082, lng: 28.9784 },
         zoom: 12,
-        styles: darkMapStyle(),
+        styles: liquidGlassMapStyle(),
         disableDefaultUI: false,
         zoomControl: true,
         mapTypeControl: false,
@@ -1195,9 +1125,9 @@
         map: map,
         draggable: true,
         polylineOptions: {
-          strokeColor: '#6366f1',
+          strokeColor: '#007AFF',
           strokeWeight: 5,
-          strokeOpacity: 0.85
+          strokeOpacity: 0.8
         },
         suppressMarkers: false
       });
@@ -1219,12 +1149,8 @@
         input.value = '';
       });
 
-      // Click to add waypoints
-      map.addListener('click', (e) => {
-        addWaypoint(e.latLng);
-      });
+      map.addListener('click', (e) => addWaypoint(e.latLng));
 
-      // When user drags the route
       directionsRenderer.addListener('directions_changed', () => {
         const dirs = directionsRenderer.getDirections();
         if (dirs) {
@@ -1233,7 +1159,6 @@
         }
       });
 
-      // Travel mode / traffic model change
       document.getElementById('travel-mode').addEventListener('change', () => {
         updateTrafficModelVisibility();
         if (waypoints.length >= 2) calculateRoute();
@@ -1242,7 +1167,6 @@
         if (waypoints.length >= 2) calculateRoute();
       });
 
-      // Set initial traffic model visibility
       updateTrafficModelVisibility();
     }
 
@@ -1252,7 +1176,6 @@
     function addWaypoint(location, name) {
       const index = waypoints.length;
       const label = name || `Point ${index + 1}`;
-
       waypoints.push({ location, name: label });
 
       const marker = new google.maps.Marker({
@@ -1265,23 +1188,17 @@
       markers.push(marker);
 
       updateWaypointsList();
-
-      if (waypoints.length >= 2) {
-        calculateRoute();
-      }
+      if (waypoints.length >= 2) calculateRoute();
     }
 
     function removeWaypoint(index) {
       waypoints.splice(index, 1);
       markers[index].setMap(null);
       markers.splice(index, 1);
-
       markers.forEach((m, i) => {
         m.setLabel({ text: String(i + 1), color: '#fff', fontWeight: '700' });
       });
-
       updateWaypointsList();
-
       if (waypoints.length >= 2) {
         calculateRoute();
       } else {
@@ -1310,19 +1227,20 @@
       directionsRenderer.setDirections({ routes: [] });
       resetStats();
       updateWaypointsList();
+      lastOptimizedOrder = null;
     }
 
     function updateWaypointsList() {
-      const list = document.getElementById('waypoints-list');
-      const countEl = document.getElementById('waypoints-count');
+      const list = document.getElementById('wp-list');
+      const countEl = document.getElementById('wp-count');
       countEl.textContent = waypoints.length + (waypoints.length === 1 ? ' point' : ' points');
 
       if (waypoints.length === 0) {
         list.innerHTML = `<div class="instructions">
-          <span class="instruction-icon">&#x1F5FA;</span>
+          <span class="big-icon">&#x1F5FA;</span>
           <strong>Click on the map</strong> to add waypoints.<br>
           Add at least <strong>2 points</strong> to create a route.<br>
-          Drag the route to adjust the path.
+          The route is automatically optimized for the best path.
         </div>`;
         return;
       }
@@ -1331,27 +1249,27 @@
       waypoints.forEach((wp, i) => {
         const isFirst = i === 0;
         const isLast = i === waypoints.length - 1 && waypoints.length > 1;
-        const markerClass = isFirst ? 'origin' : (isLast ? 'destination' : 'via');
+        const cls = isFirst ? 'origin' : (isLast ? 'dest' : 'via');
         const typeLabel = isFirst ? 'Start' : (isLast ? 'End' : 'Via ' + i);
-        const markerText = isFirst ? 'A' : (isLast ? 'B' : String(i));
+        const markerChar = isFirst ? 'A' : (isLast ? 'B' : String(i));
 
         const div = document.createElement('div');
-        div.className = 'waypoint-item';
-        div.style.animationDelay = (i * 0.05) + 's';
+        div.className = 'wp-item';
+        div.style.animationDelay = (i * 0.04) + 's';
         div.innerHTML = `
-          <div class="waypoint-marker ${markerClass}">${markerText}</div>
-          <div class="waypoint-content">
-            <div class="waypoint-type">${typeLabel}</div>
-            <div class="waypoint-name">${wp.name}</div>
+          <div class="wp-marker ${cls}">${markerChar}</div>
+          <div class="wp-content">
+            <div class="wp-type">${typeLabel}</div>
+            <div class="wp-name">${wp.name}</div>
           </div>
-          <button class="waypoint-remove" data-index="${i}" title="Remove">&#x2715;</button>
+          <button class="wp-remove" data-index="${i}" title="Remove">&#x2715;</button>
         `;
         list.appendChild(div);
       });
     }
 
     // ==========================================
-    // Route Calculation
+    // Route Calculation — OPTIMIZED
     // ==========================================
     function calculateRoute() {
       if (waypoints.length < 2) return;
@@ -1372,7 +1290,8 @@
         waypoints: intermediates,
         travelMode: google.maps.TravelMode[travelMode],
         provideRouteAlternatives: false,
-        optimizeWaypoints: false
+        // KEY: optimize waypoint order for the best route
+        optimizeWaypoints: intermediates.length > 0
       };
 
       if (travelMode === 'DRIVING') {
@@ -1385,16 +1304,66 @@
       directionsService.route(request, (result, status) => {
         if (status === 'OK') {
           directionsRenderer.setDirections(result);
+
+          // If Google reordered waypoints, update our internal order
+          const route = result.routes[0];
+          if (route.waypoint_order && route.waypoint_order.length > 0) {
+            const order = route.waypoint_order;
+            // Check if order actually changed
+            const isReordered = order.some((val, idx) => val !== idx);
+            if (isReordered) {
+              lastOptimizedOrder = order;
+              reorderWaypointsFromOptimization(order);
+            } else {
+              lastOptimizedOrder = null;
+            }
+          } else {
+            lastOptimizedOrder = null;
+          }
+
           updateRouteInfo(result);
           restartLiveRefresh();
         } else {
-          console.error('Directions request failed:', status);
-          alert('Could not calculate route: ' + status);
+          console.error('Directions failed:', status);
+          // Fallback: try without optimization
+          if (request.optimizeWaypoints) {
+            request.optimizeWaypoints = false;
+            directionsService.route(request, (result2, status2) => {
+              if (status2 === 'OK') {
+                directionsRenderer.setDirections(result2);
+                lastOptimizedOrder = null;
+                updateRouteInfo(result2);
+                restartLiveRefresh();
+              } else {
+                alert('Could not calculate route: ' + status2);
+              }
+            });
+          } else {
+            alert('Could not calculate route: ' + status);
+          }
         }
       });
     }
 
-    // Silent refresh
+    // Reorder internal waypoints array to match Google's optimized order
+    function reorderWaypointsFromOptimization(order) {
+      const first = waypoints[0];
+      const last = waypoints[waypoints.length - 1];
+      const middle = waypoints.slice(1, -1);
+
+      const reordered = order.map(i => middle[i]);
+      waypoints = [first, ...reordered, last];
+
+      // Update marker positions and labels
+      markers.forEach((m, i) => {
+        m.setPosition(waypoints[i].location);
+        m.setLabel({ text: String(i + 1), color: '#fff', fontWeight: '700' });
+      });
+
+      updateWaypointsList();
+    }
+
+    // Silent refresh for live traffic
     function silentRefreshRoute() {
       if (waypoints.length < 2) return;
 
@@ -1414,7 +1383,7 @@
         waypoints: intermediates,
         travelMode: google.maps.TravelMode[travelMode],
         provideRouteAlternatives: false,
-        optimizeWaypoints: false
+        optimizeWaypoints: false // Don't reorder on refresh — keep user's current order
       };
 
       if (travelMode === 'DRIVING') {
@@ -1482,6 +1451,14 @@
         trafficEl.innerHTML = '';
       }
 
+      // Optimize indicator
+      const optEl = document.getElementById('optimize-indicator');
+      if (lastOptimizedOrder) {
+        optEl.innerHTML = `<span class="optimize-badge">&#x2728; Route optimized</span>`;
+      } else {
+        optEl.innerHTML = '';
+      }
+
       updateTravelTimeDisplay();
     }
 
@@ -1492,8 +1469,8 @@
       if (totalDurationSeconds <= 0 || !lastRouteUpdate) return;
 
       const card = document.getElementById('time-card');
-      const display = document.getElementById('time-remaining');
-      const sub = document.getElementById('time-remaining-sub');
+      const display = document.getElementById('time-value');
+      const sub = document.getElementById('time-sub');
       const etaEl = document.getElementById('time-eta');
       const updatedEl = document.getElementById('time-updated');
 
@@ -1501,10 +1478,8 @@
 
       const eta = new Date(Date.now() + totalDurationSeconds * 1000);
       etaEl.textContent = 'ETA ' + formatTime(eta);
-
       sub.textContent = 'Based on current traffic';
       card.classList.add('has-route');
-
       updatedEl.textContent = 'Updated ' + formatTime(new Date(lastRouteUpdate));
     }
 
@@ -1513,17 +1488,14 @@
     // ==========================================
     function restartLiveRefresh() {
       stopLiveRefresh();
-      document.getElementById('refresh-badge').style.display = 'flex';
-
-      liveRefreshInterval = setInterval(() => {
-        silentRefreshRoute();
-      }, REFRESH_INTERVAL_MS);
+      document.getElementById('live-badge').style.display = 'flex';
+      liveRefreshInterval = setInterval(() => silentRefreshRoute(), REFRESH_INTERVAL_MS);
     }
 
     function stopLiveRefresh() {
       if (liveRefreshInterval) clearInterval(liveRefreshInterval);
       liveRefreshInterval = null;
-      document.getElementById('refresh-badge').style.display = 'none';
+      document.getElementById('live-badge').style.display = 'none';
     }
 
     // ==========================================
@@ -1549,31 +1521,34 @@
       document.getElementById('total-distance').textContent = '\u2014';
       document.getElementById('stat-eta').textContent = '\u2014';
       document.getElementById('stat-speed').textContent = '\u2014';
-      document.getElementById('time-remaining').textContent = '\u2014';
-      document.getElementById('time-remaining-sub').textContent = 'Add at least 2 points to see travel time';
+      document.getElementById('time-value').textContent = '\u2014';
+      document.getElementById('time-sub').textContent = 'Add at least 2 points to see travel time';
       document.getElementById('time-eta').textContent = '';
       document.getElementById('time-updated').textContent = '';
       document.getElementById('traffic-indicator').innerHTML = '';
+      document.getElementById('optimize-indicator').innerHTML = '';
       document.getElementById('leg-details').style.display = 'none';
       document.getElementById('time-card').classList.remove('has-route');
     }
 
-    function darkMapStyle() {
+    // Liquid Glass-compatible dark map style
+    function liquidGlassMapStyle() {
       return [
-        { elementType: "geometry", stylers: [{ color: "#0d0d1a" }] },
-        { elementType: "labels.text.fill", stylers: [{ color: "#6b7280" }] },
-        { elementType: "labels.text.stroke", stylers: [{ color: "#0d0d1a" }] },
-        { featureType: "administrative.country", elementType: "geometry.stroke", stylers: [{ color: "#2d2d4a" }] },
-        { featureType: "road", elementType: "geometry", stylers: [{ color: "#1a1a30" }] },
-        { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#12122a" }] },
-        { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#1e1e3a" }] },
-        { featureType: "road.highway", elementType: "geometry.stroke", stylers: [{ color: "#15152d" }] },
-        { featureType: "road.highway", elementType: "labels.text.fill", stylers: [{ color: "#6366f1" }] },
-        { featureType: "transit", elementType: "labels.text.fill", stylers: [{ color: "#555570" }] },
-        { featureType: "water", elementType: "geometry.fill", stylers: [{ color: "#060610" }] },
-        { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#2d2d4a" }] },
-        { featureType: "poi", elementType: "labels.text.fill", stylers: [{ color: "#555570" }] },
-        { featureType: "poi.park", elementType: "geometry", stylers: [{ color: "#0a1a10" }] }
+        { elementType: "geometry", stylers: [{ color: "#0a0f1e" }] },
+        { elementType: "labels.text.fill", stylers: [{ color: "#546e8a" }] },
+        { elementType: "labels.text.stroke", stylers: [{ color: "#0a0f1e" }] },
+        { featureType: "administrative.country", elementType: "geometry.stroke", stylers: [{ color: "#1e2d45" }] },
+        { featureType: "road", elementType: "geometry", stylers: [{ color: "#131b2e" }] },
+        { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#0e1524" }] },
+        { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#172035" }] },
+        { featureType: "road.highway", elementType: "geometry.stroke", stylers: [{ color: "#0e1524" }] },
+        { featureType: "road.highway", elementType: "labels.text.fill", stylers: [{ color: "#3a7bd5" }] },
+        { featureType: "transit", elementType: "labels.text.fill", stylers: [{ color: "#3d5068" }] },
+        { featureType: "water", elementType: "geometry.fill", stylers: [{ color: "#050a15" }] },
+        { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#1e2d45" }] },
+        { featureType: "poi", elementType: "labels.text.fill", stylers: [{ color: "#3d5068" }] },
+        { featureType: "poi.park", elementType: "geometry", stylers: [{ color: "#081510" }] },
+        { featureType: "landscape.man_made", elementType: "geometry", stylers: [{ color: "#0c1222" }] }
       ];
     }
 
@@ -1585,10 +1560,8 @@
         alert('Geolocation is not supported by your browser.');
         return;
       }
-
-      const isSecureContext = window.isSecureContext;
-      if (!isSecureContext) {
-        alert('Location sharing requires HTTPS. It works on localhost for development, but you need HTTPS in production.');
+      if (!window.isSecureContext) {
+        alert('Location requires HTTPS (works on localhost for dev).');
         return;
       }
 
@@ -1600,13 +1573,8 @@
       document.getElementById('loc-coords').textContent = 'Acquiring...';
 
       locationWatchId = navigator.geolocation.watchPosition(
-        onLocationSuccess,
-        onLocationError,
-        {
-          enableHighAccuracy: true,
-          maximumAge: 10000,
-          timeout: 15000
-        }
+        onLocationSuccess, onLocationError,
+        { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 }
       );
     }
 
@@ -1616,10 +1584,8 @@
         locationWatchId = null;
       }
       isTrackingLocation = false;
-
       if (locationMarker) { locationMarker.setMap(null); locationMarker = null; }
       if (locationAccuracyCircle) { locationAccuracyCircle.setMap(null); locationAccuracyCircle = null; }
-
       const btn = document.getElementById('btn-location');
       btn.classList.remove('active');
       btn.innerHTML = '&#x1F4CD; Location';
@@ -1628,11 +1594,7 @@
     }
 
     function toggleLocationTracking() {
-      if (isTrackingLocation) {
-        stopLocationTracking();
-      } else {
-        startLocationTracking();
-      }
+      isTrackingLocation ? stopLocationTracking() : startLocationTracking();
     }
 
     function onLocationSuccess(position) {
@@ -1640,39 +1602,25 @@
       const pos = { lat: latitude, lng: longitude };
 
       document.getElementById('location-card').classList.add('tracking');
-      document.getElementById('loc-coords').textContent =
-        `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
-      document.getElementById('loc-accuracy').textContent =
-        `Accuracy: \u00B1${Math.round(accuracy)}m`;
+      document.getElementById('loc-coords').textContent = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
+      document.getElementById('loc-accuracy').textContent = `Accuracy: \u00B1${Math.round(accuracy)}m`;
 
       if (!locationMarker) {
         locationMarker = new google.maps.Marker({
-          position: pos,
-          map: map,
+          position: pos, map: map,
           icon: {
-            path: google.maps.SymbolPath.CIRCLE,
-            scale: 8,
-            fillColor: '#6366f1',
-            fillOpacity: 1,
-            strokeColor: '#ffffff',
-            strokeWeight: 3,
+            path: google.maps.SymbolPath.CIRCLE, scale: 8,
+            fillColor: '#007AFF', fillOpacity: 1,
+            strokeColor: '#ffffff', strokeWeight: 3,
           },
-          title: 'Your Location',
-          zIndex: 999
+          title: 'Your Location', zIndex: 999
         });
-
         locationAccuracyCircle = new google.maps.Circle({
-          center: pos,
-          radius: accuracy,
-          map: map,
-          fillColor: '#6366f1',
-          fillOpacity: 0.08,
-          strokeColor: '#6366f1',
-          strokeOpacity: 0.2,
-          strokeWeight: 1,
-          clickable: false
+          center: pos, radius: accuracy, map: map,
+          fillColor: '#007AFF', fillOpacity: 0.06,
+          strokeColor: '#007AFF', strokeOpacity: 0.15,
+          strokeWeight: 1, clickable: false
         });
-
         map.panTo(pos);
         map.setZoom(15);
       } else {
@@ -1685,22 +1633,13 @@
     function onLocationError(error) {
       let msg;
       switch (error.code) {
-        case error.PERMISSION_DENIED:
-          msg = 'Location permission denied. Please allow location access in your browser settings.';
-          break;
-        case error.POSITION_UNAVAILABLE:
-          msg = 'Location information is unavailable.';
-          break;
-        case error.TIMEOUT:
-          msg = 'Location request timed out. Please try again.';
-          break;
-        default:
-          msg = 'An unknown error occurred getting your location.';
+        case error.PERMISSION_DENIED: msg = 'Location permission denied.'; break;
+        case error.POSITION_UNAVAILABLE: msg = 'Location unavailable.'; break;
+        case error.TIMEOUT: msg = 'Location request timed out.'; break;
+        default: msg = 'Unknown location error.';
       }
-
       document.getElementById('loc-coords').textContent = 'Error';
       document.getElementById('loc-accuracy').textContent = msg;
-
       if (error.code === error.PERMISSION_DENIED) {
         stopLocationTracking();
         alert(msg);
@@ -1715,29 +1654,16 @@
     // ==========================================
     // Event Listeners
     // ==========================================
-    document.getElementById('btn-reverse').addEventListener('click', () => {
-      reverseRoute();
-    });
-    document.getElementById('btn-clear').addEventListener('click', () => {
-      clearRoute();
-    });
-    document.getElementById('btn-location').addEventListener('click', () => {
-      toggleLocationTracking();
-    });
-    document.getElementById('btn-locate-stop').addEventListener('click', () => {
-      stopLocationTracking();
-    });
-    document.getElementById('waypoints-list').addEventListener('click', (e) => {
-      const btn = e.target.closest('.waypoint-remove');
-      if (btn) {
-        const index = parseInt(btn.getAttribute('data-index'), 10);
-        removeWaypoint(index);
-      }
+    document.getElementById('btn-reverse').addEventListener('click', reverseRoute);
+    document.getElementById('btn-clear').addEventListener('click', clearRoute);
+    document.getElementById('btn-location').addEventListener('click', toggleLocationTracking);
+    document.getElementById('btn-loc-stop').addEventListener('click', stopLocationTracking);
+    document.getElementById('wp-list').addEventListener('click', (e) => {
+      const btn = e.target.closest('.wp-remove');
+      if (btn) removeWaypoint(parseInt(btn.dataset.index, 10));
     });
 
-    // ==========================================
-    // Mobile Panel Toggle
-    // ==========================================
+    // Mobile panel
     const mobileToggle = document.getElementById('mobile-toggle');
     const sidebar = document.querySelector('.sidebar');
     let panelOpen = false;
@@ -1756,11 +1682,11 @@
       }
     });
 
-    // Update the floating button text with current travel time
+    // Mobile toggle text
     function updateMobileToggleText() {
-      const toggleTime = document.getElementById('toggle-time');
+      const el = document.getElementById('toggle-time');
       if (totalDurationSeconds > 0 && lastRouteUpdate) {
-        toggleTime.textContent = formatDuration(totalDurationSeconds) + ' remaining';
+        el.textContent = formatDuration(totalDurationSeconds) + ' remaining';
       }
     }
     setInterval(updateMobileToggleText, 1000);
