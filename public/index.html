@@ -5,93 +5,224 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#1e293b">
-  <title>Custom Route Timer</title>
+  <meta name="theme-color" content="#0a0a1a">
+  <title>RouteFlow — Custom Route Timer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
+    /* ========== CSS Custom Properties ========== */
+    :root {
+      --bg-primary: #06060f;
+      --bg-secondary: #0d0d1a;
+      --bg-card: rgba(15, 15, 30, 0.6);
+      --bg-glass: rgba(255, 255, 255, 0.03);
+      --bg-glass-hover: rgba(255, 255, 255, 0.06);
+      --border-subtle: rgba(255, 255, 255, 0.06);
+      --border-glow: rgba(255, 255, 255, 0.1);
+      --text-primary: #f0f0f5;
+      --text-secondary: #8888a0;
+      --text-muted: #55556a;
+      --accent: #6366f1;
+      --accent-light: #818cf8;
+      --accent-glow: rgba(99, 102, 241, 0.3);
+      --accent-2: #06b6d4;
+      --accent-2-glow: rgba(6, 182, 212, 0.3);
+      --success: #10b981;
+      --success-glow: rgba(16, 185, 129, 0.3);
+      --warning: #f59e0b;
+      --warning-glow: rgba(245, 158, 11, 0.3);
+      --danger: #ef4444;
+      --danger-glow: rgba(239, 68, 68, 0.3);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+      --radius-2xl: 24px;
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
+      --shadow-glow: 0 0 30px var(--accent-glow);
+      --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-base: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      --sidebar-width: 380px;
+    }
+
     /* ========== Reset & Base ========== */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
-      background: #0f172a;
-      color: #e2e8f0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
       height: 100vh;
+      height: 100dvh;
       display: flex;
       flex-direction: column;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
+
+    /* ========== Scrollbar ========== */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
 
     /* ========== Header ========== */
     header {
-      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-      padding: 12px 24px;
+      background: rgba(10, 10, 26, 0.85);
+      backdrop-filter: blur(20px) saturate(1.5);
+      -webkit-backdrop-filter: blur(20px) saturate(1.5);
+      padding: 10px 20px;
       display: flex;
       align-items: center;
       gap: 16px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
       z-index: 10;
-      flex-wrap: wrap;
+      border-bottom: 1px solid var(--border-subtle);
+      flex-shrink: 0;
     }
-    header h1 {
-      font-size: 1.25rem;
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      box-shadow: 0 2px 12px var(--accent-glow);
+    }
+    .brand-text {
+      font-size: 1rem;
       font-weight: 700;
-      color: #38bdf8;
-      white-space: nowrap;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     /* ========== Controls ========== */
     .controls {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
+      flex: 1;
     }
-    .controls select, .controls button {
-      padding: 8px 14px;
-      border-radius: 8px;
-      border: 1px solid #475569;
-      background: #1e293b;
-      color: #e2e8f0;
-      font-size: 0.875rem;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .controls select:hover, .controls button:hover {
-      border-color: #38bdf8;
-    }
-    .btn-primary {
-      background: #0284c7 !important;
-      border-color: #0284c7 !important;
-      font-weight: 600;
-    }
-    .btn-primary:hover { background: #0369a1 !important; }
-    .btn-danger {
-      background: #dc2626 !important;
-      border-color: #dc2626 !important;
-      font-weight: 600;
-    }
-    .btn-danger:hover { background: #b91c1c !important; }
 
-    /* ========== Refresh indicator ========== */
-    .refresh-badge {
-      font-size: 0.7rem;
-      color: #94a3b8;
-      padding: 4px 10px;
-      background: #0f172a;
-      border-radius: 20px;
-      border: 1px solid #334155;
+    .control-group {
       display: flex;
       align-items: center;
       gap: 6px;
+    }
+
+    .controls select, .controls button {
+      padding: 7px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-glow);
+      background: var(--bg-glass);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      white-space: nowrap;
+    }
+    .controls select:hover, .controls button:hover {
+      background: var(--bg-glass-hover);
+      border-color: rgba(255,255,255,0.15);
+    }
+    .controls select:focus, .controls button:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--accent-glow);
+    }
+    .controls select option {
+      background: #1a1a2e;
+      color: var(--text-primary);
+    }
+
+    .btn-action {
+      background: rgba(99, 102, 241, 0.15) !important;
+      border-color: rgba(99, 102, 241, 0.3) !important;
+      color: var(--accent-light) !important;
+    }
+    .btn-action:hover {
+      background: rgba(99, 102, 241, 0.25) !important;
+      border-color: rgba(99, 102, 241, 0.5) !important;
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.15) !important;
+    }
+
+    .btn-location {
+      background: rgba(6, 182, 212, 0.15) !important;
+      border-color: rgba(6, 182, 212, 0.3) !important;
+      color: var(--accent-2) !important;
+    }
+    .btn-location:hover {
+      background: rgba(6, 182, 212, 0.25) !important;
+      border-color: rgba(6, 182, 212, 0.5) !important;
+    }
+    .btn-location.active {
+      background: rgba(16, 185, 129, 0.2) !important;
+      border-color: rgba(16, 185, 129, 0.5) !important;
+      color: var(--success) !important;
+      animation: locationPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes locationPulse {
+      0%, 100% { box-shadow: 0 0 0 0 var(--success-glow); }
+      50% { box-shadow: 0 0 12px 2px var(--success-glow); }
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.1) !important;
+      border-color: rgba(239, 68, 68, 0.25) !important;
+      color: #f87171 !important;
+    }
+    .btn-danger:hover {
+      background: rgba(239, 68, 68, 0.2) !important;
+      border-color: rgba(239, 68, 68, 0.5) !important;
+    }
+
+    /* ========== Live Badge ========== */
+    .refresh-badge {
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: var(--success);
+      padding: 4px 10px;
+      background: rgba(16, 185, 129, 0.1);
+      border-radius: 20px;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     .refresh-dot {
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background: #22c55e;
-      animation: blink 2s infinite;
+      background: var(--success);
+      animation: pulse 2s ease-in-out infinite;
     }
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
     }
 
     /* ========== Main Layout ========== */
@@ -99,65 +230,231 @@
       display: flex;
       flex: 1;
       overflow: hidden;
+      position: relative;
     }
 
     /* ========== Sidebar ========== */
     .sidebar {
-      width: 360px;
-      min-width: 300px;
-      background: #1e293b;
-      padding: 20px;
+      width: var(--sidebar-width);
+      min-width: 320px;
+      background: var(--bg-secondary);
+      padding: 16px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 16px;
-      border-right: 1px solid #334155;
+      gap: 14px;
+      border-right: 1px solid var(--border-subtle);
+      position: relative;
+      z-index: 5;
     }
 
-    /* ========== Time Remaining Card ========== */
-    .time-card {
-      background: linear-gradient(135deg, #0c4a6e 0%, #164e63 100%);
-      border-radius: 16px;
-      padding: 28px 24px;
-      text-align: center;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-      transition: background 0.5s;
+    /* ========== Search Box ========== */
+    .search-container {
+      position: relative;
     }
-    .time-card.has-route {
-      background: linear-gradient(135deg, #065f46 0%, #064e3b 100%);
-    }
-    .time-card.short {
-      background: linear-gradient(135deg, #92400e 0%, #78350f 100%);
-    }
-    .time-card-label {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      color: #94a3b8;
-      margin-bottom: 6px;
-    }
-    .time-remaining {
-      font-size: 2.6rem;
-      font-weight: 800;
-      color: #f0f9ff;
-      line-height: 1;
-    }
-    .time-remaining-sub {
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
       font-size: 0.85rem;
-      color: #94a3b8;
-      margin-top: 10px;
+      pointer-events: none;
+      z-index: 1;
     }
-    .time-eta {
-      font-size: 1.1rem;
-      color: #67e8f9;
-      margin-top: 6px;
+    .search-container input {
+      width: 100%;
+      padding: 12px 14px 12px 38px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-glow);
+      background: var(--bg-glass);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 400;
+      transition: all var(--transition-fast);
+    }
+    .search-container input::placeholder {
+      color: var(--text-muted);
+    }
+    .search-container input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow), 0 0 20px var(--accent-glow);
+      background: rgba(255,255,255,0.04);
+    }
+
+    /* ========== Location Status Card ========== */
+    .location-card {
+      background: var(--bg-glass);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.82rem;
+      transition: all var(--transition-base);
+    }
+    .location-card.tracking {
+      border-color: rgba(6, 182, 212, 0.3);
+      background: rgba(6, 182, 212, 0.05);
+    }
+    .location-pulse {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--accent-2);
+      flex-shrink: 0;
+      position: relative;
+    }
+    .location-pulse::after {
+      content: '';
+      position: absolute;
+      inset: -5px;
+      border-radius: 50%;
+      border: 2px solid var(--accent-2);
+      animation: locPulse 1.5s ease-out infinite;
+    }
+    @keyframes locPulse {
+      0% { transform: scale(1); opacity: 0.6; }
+      100% { transform: scale(2); opacity: 0; }
+    }
+    .location-info { flex: 1; min-width: 0; }
+    .location-info .loc-label {
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
       font-weight: 600;
     }
-    .time-updated {
-      font-size: 0.65rem;
-      color: #64748b;
-      margin-top: 8px;
+    .location-info .loc-coords {
+      font-variant-numeric: tabular-nums;
+      color: var(--text-primary);
+      font-size: 0.8rem;
+      font-weight: 500;
     }
+    .location-info .loc-accuracy {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+    .btn-locate-stop {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.85rem;
+      padding: 4px 8px;
+      border-radius: var(--radius-sm);
+      transition: all var(--transition-fast);
+    }
+    .btn-locate-stop:hover { color: var(--danger); background: rgba(239,68,68,0.1); }
+
+    /* ========== Time Card ========== */
+    .time-card {
+      position: relative;
+      border-radius: var(--radius-xl);
+      padding: 28px 24px;
+      text-align: center;
+      overflow: hidden;
+      transition: all var(--transition-slow);
+      border: 1px solid var(--border-subtle);
+    }
+    .time-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(6, 182, 212, 0.08) 100%);
+      z-index: 0;
+      transition: all var(--transition-slow);
+    }
+    .time-card.has-route::before {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(6, 182, 212, 0.08) 100%);
+    }
+    .time-card.has-route {
+      border-color: rgba(16, 185, 129, 0.2);
+    }
+    .time-card > * { position: relative; z-index: 1; }
+
+    .time-card-label {
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 2.5px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    .time-remaining {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      line-height: 1;
+      letter-spacing: -0.03em;
+      font-variant-numeric: tabular-nums;
+      transition: color var(--transition-base);
+    }
+    .time-card.has-route .time-remaining {
+      background: linear-gradient(135deg, #34d399 0%, #06b6d4 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .time-remaining-sub {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      margin-top: 8px;
+      font-weight: 400;
+    }
+    .time-eta {
+      font-size: 1rem;
+      color: var(--accent-2);
+      margin-top: 8px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+    .time-updated {
+      font-size: 0.6rem;
+      color: var(--text-muted);
+      margin-top: 8px;
+      font-weight: 500;
+    }
+
+    /* ========== Traffic Badge ========== */
+    .traffic-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      margin-top: 8px;
+      letter-spacing: 0.3px;
+    }
+    .traffic-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+    .traffic-badge.green {
+      background: rgba(16, 185, 129, 0.12);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+    .traffic-badge.green::before { background: #34d399; }
+    .traffic-badge.yellow {
+      background: rgba(245, 158, 11, 0.12);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+    .traffic-badge.yellow::before { background: #fbbf24; }
+    .traffic-badge.red {
+      background: rgba(239, 68, 68, 0.12);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    .traffic-badge.red::before { background: #f87171; }
 
     /* ========== Stats Grid ========== */
     .stats-grid {
@@ -166,67 +463,224 @@
       gap: 10px;
     }
     .stat-card {
-      background: #0f172a;
-      border-radius: 12px;
-      padding: 14px;
+      background: var(--bg-glass);
+      border-radius: var(--radius-md);
+      padding: 14px 12px;
       text-align: center;
-      border: 1px solid #334155;
+      border: 1px solid var(--border-subtle);
+      transition: all var(--transition-fast);
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card:hover {
+      border-color: var(--border-glow);
+      background: var(--bg-glass-hover);
+      transform: translateY(-1px);
+    }
+    .stat-icon {
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+      opacity: 0.7;
     }
     .stat-value {
-      font-size: 1.3rem;
+      font-size: 1.2rem;
       font-weight: 700;
-      color: #38bdf8;
+      color: var(--text-primary);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
     }
     .stat-label {
-      font-size: 0.7rem;
+      font-size: 0.6rem;
       text-transform: uppercase;
-      letter-spacing: 1px;
-      color: #64748b;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
       margin-top: 4px;
+      font-weight: 600;
     }
 
-    /* ========== Waypoints List ========== */
+    /* ========== Leg Details ========== */
+    .leg-details {
+      background: var(--bg-glass);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      border: 1px solid var(--border-subtle);
+    }
+    .leg-details h3 {
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+    .leg-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      font-size: 0.8rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .leg-item:last-child { border-bottom: none; }
+    .leg-item-label {
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+    .leg-item-value {
+      color: var(--text-primary);
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ========== Waypoints Section ========== */
     .waypoints-section {
       flex: 1;
       overflow-y: auto;
+      min-height: 0;
     }
-    .waypoints-section h3 {
-      font-size: 0.8rem;
+    .waypoints-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .waypoints-header h3 {
+      font-size: 0.6rem;
       text-transform: uppercase;
-      letter-spacing: 1px;
-      color: #64748b;
-      margin-bottom: 8px;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      font-weight: 600;
     }
+    .waypoints-count {
+      font-size: 0.6rem;
+      color: var(--text-muted);
+      background: var(--bg-glass);
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: 600;
+      border: 1px solid var(--border-subtle);
+    }
+
+    /* Waypoint Timeline */
     .waypoint-item {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 8px 12px;
-      background: #0f172a;
-      border-radius: 8px;
+      gap: 12px;
+      padding: 10px 12px;
+      background: var(--bg-glass);
+      border-radius: var(--radius-sm);
       margin-bottom: 6px;
-      border: 1px solid #334155;
-      font-size: 0.85rem;
+      border: 1px solid var(--border-subtle);
+      font-size: 0.82rem;
+      transition: all var(--transition-fast);
+      position: relative;
+      animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
     }
-    .waypoint-dot {
-      width: 10px;
-      height: 10px;
+    .waypoint-item:hover {
+      background: var(--bg-glass-hover);
+      border-color: var(--border-glow);
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .waypoint-marker {
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      font-weight: 700;
       flex-shrink: 0;
+      position: relative;
     }
-    .waypoint-dot.origin { background: #22c55e; }
-    .waypoint-dot.via { background: #f59e0b; }
-    .waypoint-dot.destination { background: #ef4444; }
+    .waypoint-marker.origin {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+      border: 2px solid rgba(16, 185, 129, 0.4);
+    }
+    .waypoint-marker.via {
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--accent-light);
+      border: 2px solid rgba(99, 102, 241, 0.3);
+    }
+    .waypoint-marker.destination {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 2px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .waypoint-content {
+      flex: 1;
+      min-width: 0;
+    }
+    .waypoint-type {
+      font-size: 0.55rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 1px;
+    }
+    .waypoint-name {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     .waypoint-remove {
       margin-left: auto;
       background: none;
       border: none;
-      color: #64748b;
+      color: var(--text-muted);
       cursor: pointer;
-      font-size: 1rem;
-      padding: 0 4px;
+      font-size: 0.75rem;
+      padding: 6px;
+      border-radius: var(--radius-sm);
+      transition: all var(--transition-fast);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
     }
-    .waypoint-remove:hover { color: #ef4444; }
+    .waypoint-remove:hover {
+      color: var(--danger);
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    /* ========== Instructions ========== */
+    .instructions {
+      background: var(--bg-glass);
+      border: 1px dashed rgba(255,255,255,0.08);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.82rem;
+      line-height: 1.7;
+    }
+    .instructions strong { color: var(--accent-light); font-weight: 600; }
+    .instructions .instruction-icon {
+      font-size: 2rem;
+      display: block;
+      margin-bottom: 12px;
+      opacity: 0.5;
+    }
 
     /* ========== Map ========== */
     #map {
@@ -234,140 +688,162 @@
       min-height: 400px;
     }
 
-    /* ========== Search Box ========== */
-    .search-container {
-      position: relative;
-    }
-    .search-container input {
-      width: 100%;
-      padding: 10px 14px;
-      border-radius: 8px;
-      border: 1px solid #475569;
-      background: #0f172a;
-      color: #e2e8f0;
-      font-size: 0.9rem;
-    }
-    .search-container input:focus {
-      outline: none;
-      border-color: #38bdf8;
-    }
-
-    /* ========== Leg Details ========== */
-    .leg-details {
-      background: #0f172a;
-      border-radius: 12px;
-      padding: 14px;
-      border: 1px solid #334155;
-    }
-    .leg-details h3 {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: #64748b;
-      margin-bottom: 8px;
-    }
-    .leg-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 6px 0;
-      font-size: 0.82rem;
-      border-bottom: 1px solid #1e293b;
-    }
-    .leg-item:last-child { border-bottom: none; }
-
     /* ========== Loading ========== */
     .loading-overlay {
       position: fixed;
       inset: 0;
-      background: #0f172a;
+      background: var(--bg-primary);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       z-index: 9999;
     }
+    .loading-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+    .loading-logo {
+      width: 56px;
+      height: 56px;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: 0 0 40px var(--accent-glow);
+      animation: loadingFloat 2s ease-in-out infinite;
+    }
+    @keyframes loadingFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
     .loading-spinner {
-      width: 48px;
-      height: 48px;
-      border: 4px solid #334155;
-      border-top: 4px solid #38bdf8;
+      width: 36px;
+      height: 36px;
+      border: 3px solid rgba(255,255,255,0.05);
+      border-top: 3px solid var(--accent);
+      border-right: 3px solid var(--accent-2);
       border-radius: 50%;
-      animation: spin 1s linear infinite;
+      animation: spin 0.8s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
     .loading-text {
-      margin-top: 16px;
-      color: #94a3b8;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      font-weight: 500;
     }
+
     .error-message {
-      background: #7f1d1d;
-      border: 1px solid #dc2626;
-      border-radius: 12px;
-      padding: 16px;
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: var(--radius-lg);
+      padding: 24px;
       text-align: center;
+      max-width: 400px;
+    }
+    .error-message h2 {
+      color: #f87171;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+    .error-message p {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+    .error-message code {
+      background: rgba(255,255,255,0.05);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      color: var(--accent-light);
     }
 
     /* ========== Mobile Toggle Button ========== */
     .mobile-panel-toggle {
       display: none;
       position: fixed;
-      bottom: 20px;
+      bottom: 24px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 100;
-      background: #0284c7;
-      color: #fff;
-      border: none;
-      border-radius: 24px;
+      background: rgba(10, 10, 26, 0.85);
+      backdrop-filter: blur(16px) saturate(1.5);
+      -webkit-backdrop-filter: blur(16px) saturate(1.5);
+      color: var(--text-primary);
+      border: 1px solid var(--border-glow);
+      border-radius: 50px;
       padding: 12px 24px;
-      font-size: 0.9rem;
-      font-weight: 700;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      box-shadow: var(--shadow-lg), 0 0 30px rgba(99, 102, 241, 0.1);
       cursor: pointer;
-      transition: all 0.3s;
+      transition: all var(--transition-base);
     }
     .mobile-panel-toggle:active {
-      transform: translateX(-50%) scale(0.95);
+      transform: translateX(-50%) scale(0.96);
     }
     .mobile-panel-toggle .toggle-time {
       font-variant-numeric: tabular-nums;
+    }
+    .mobile-panel-toggle .toggle-icon {
+      margin-right: 8px;
     }
 
     /* ========== Responsive — Mobile ========== */
     @media (max-width: 768px) {
       body { height: 100dvh; }
 
-      /* Compact single-row header */
       header {
         padding: 6px 10px;
         gap: 6px;
         flex-wrap: nowrap;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
       }
-      header h1 {
-        font-size: 0.95rem;
-        display: none; /* hide title on mobile, save space for map */
+      .brand {
+        display: flex;
       }
+      .brand-icon {
+        width: 28px;
+        height: 28px;
+        font-size: 0.75rem;
+      }
+      .brand-text { display: none; }
 
       .controls {
-        gap: 5px;
-        width: 100%;
+        gap: 4px;
         flex-wrap: nowrap;
-        justify-content: space-between;
+        justify-content: flex-end;
+        flex: 1;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
       }
+      .controls::-webkit-scrollbar { display: none; }
+      .control-group { gap: 4px; flex-shrink: 0; }
       .controls select, .controls button {
         padding: 6px 8px;
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         border-radius: 6px;
-        min-height: 34px;
+        min-height: 32px;
         white-space: nowrap;
       }
-      .refresh-badge {
-        display: none !important;
-      }
+      /* Hide button text labels on mobile, show icons only */
+      #btn-location { font-size: 0; }
+      #btn-location::before { content: '\1F4CD'; font-size: 0.8rem; }
+      #btn-reverse { font-size: 0; }
+      #btn-reverse::before { content: '\21C4'; font-size: 0.8rem; }
+      #btn-clear { font-size: 0; }
+      #btn-clear::before { content: '\2715'; font-size: 0.8rem; }
+      #btn-location.active { font-size: 0; }
+      #btn-location.active::before { content: '\1F4CD'; font-size: 0.8rem; }
+      .refresh-badge { display: none !important; }
 
-      /* Map takes ALL available space */
       .main-container {
         flex-direction: column-reverse;
         position: relative;
@@ -383,7 +859,7 @@
         min-height: 0;
       }
 
-      /* Sidebar = hidden bottom sheet */
+      /* Sidebar = bottom sheet */
       .sidebar {
         position: fixed;
         bottom: 0;
@@ -391,18 +867,21 @@
         right: 0;
         width: 100%;
         min-width: 0;
-        max-height: 70dvh;
+        max-height: 75dvh;
         border-right: none;
-        border-top: 2px solid #475569;
-        border-radius: 20px 20px 0 0;
-        padding: 8px 14px 24px;
-        gap: 10px;
+        border-top: 1px solid var(--border-glow);
+        border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+        padding: 8px 16px 28px;
+        gap: 12px;
         z-index: 50;
         transform: translateY(100%);
-        transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 -8px 30px rgba(0,0,0,0.5);
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 -12px 50px rgba(0, 0, 0, 0.6);
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
+        background: rgba(13, 13, 26, 0.95);
+        backdrop-filter: blur(24px) saturate(1.5);
+        -webkit-backdrop-filter: blur(24px) saturate(1.5);
       }
       .sidebar.open {
         transform: translateY(0);
@@ -412,210 +891,124 @@
       .sidebar::before {
         content: '';
         display: block;
-        width: 40px;
+        width: 36px;
         height: 4px;
-        background: #475569;
+        background: rgba(255,255,255,0.15);
         border-radius: 4px;
-        margin: 0 auto 8px;
+        margin: 4px auto 8px;
         flex-shrink: 0;
       }
 
-      /* Floating toggle */
       .mobile-panel-toggle {
         display: flex;
         align-items: center;
-        gap: 8px;
-        bottom: 16px;
-        padding: 10px 20px;
+        gap: 0;
+        bottom: 20px;
+        padding: 11px 22px;
+        font-size: 0.82rem;
+      }
+
+      /* Compact elements */
+      .time-card {
+        padding: 18px 16px;
+        border-radius: var(--radius-lg);
+      }
+      .time-remaining { font-size: 2.4rem; }
+      .time-card-label { font-size: 0.55rem; }
+      .time-remaining-sub { font-size: 0.72rem; }
+      .time-eta { font-size: 0.9rem; }
+
+      .stats-grid { gap: 8px; }
+      .stat-card { padding: 10px 8px; border-radius: var(--radius-sm); }
+      .stat-icon { font-size: 0.8rem; margin-bottom: 4px; }
+      .stat-value { font-size: 1rem; }
+      .stat-label { font-size: 0.55rem; }
+
+      .search-container input {
+        padding: 12px 12px 12px 36px;
+        font-size: 0.9rem;
+        border-radius: var(--radius-md);
+      }
+
+      .waypoint-item { padding: 8px 10px; font-size: 0.78rem; }
+      .waypoint-marker { width: 24px; height: 24px; font-size: 0.6rem; }
+      .waypoint-remove {
+        width: 32px;
+        height: 32px;
         font-size: 0.85rem;
       }
 
-      /* Time card compact */
-      .time-card {
-        padding: 14px;
-        border-radius: 12px;
-      }
-      .time-remaining { font-size: 2.2rem; }
-      .time-card-label { font-size: 0.6rem; }
-      .time-remaining-sub { font-size: 0.72rem; }
-      .time-eta { font-size: 0.95rem; }
-
-      /* Stats compact */
-      .stats-grid { gap: 6px; }
-      .stat-card { padding: 8px; border-radius: 8px; }
-      .stat-value { font-size: 1.05rem; }
-      .stat-label { font-size: 0.6rem; }
-
-      /* Search */
-      .search-container input {
-        padding: 11px 12px;
-        font-size: 0.95rem;
-        border-radius: 10px;
-      }
-
-      /* Waypoints */
-      .waypoint-item { padding: 8px 10px; font-size: 0.8rem; }
-      .waypoint-remove {
-        font-size: 1.2rem;
-        padding: 4px 8px;
-        min-width: 32px;
-        min-height: 32px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .location-card { padding: 8px 10px; }
-      .instructions { padding: 10px; font-size: 0.78rem; }
-      .leg-details { padding: 10px; }
+      .location-card { padding: 10px 12px; }
+      .instructions { padding: 14px; font-size: 0.78rem; }
+      .leg-details { padding: 12px; }
     }
 
     /* ========== Extra small phones ========== */
     @media (max-width: 380px) {
-      .controls select, .controls button { font-size: 0.7rem; padding: 5px 6px; min-height: 30px; }
-      .time-remaining { font-size: 1.8rem; }
-      .stat-value { font-size: 0.95rem; }
+      .controls select, .controls button { font-size: 0; padding: 6px 8px; min-height: 30px; }
+      .controls select { font-size: 0.65rem; }
+      .time-remaining { font-size: 2rem; }
+      .stat-value { font-size: 0.9rem; }
     }
 
     /* ========== Landscape phone ========== */
     @media (max-width: 768px) and (orientation: landscape) {
       header { padding: 4px 10px; }
       .controls select, .controls button { min-height: 30px; padding: 4px 8px; }
-      .sidebar { max-height: 80dvh; }
+      .sidebar { max-height: 85dvh; }
     }
 
-    /* ========== Instructions ========== */
-    .instructions {
-      background: #0f172a;
-      border: 1px dashed #475569;
-      border-radius: 12px;
-      padding: 16px;
-      text-align: center;
-      color: #94a3b8;
-      font-size: 0.85rem;
-      line-height: 1.6;
+    /* ========== Fade-in animation ========== */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-    .instructions strong { color: #38bdf8; }
-
-    /* ========== Traffic badge ========== */
-    .traffic-badge {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 10px;
-      font-size: 0.7rem;
-      font-weight: 600;
-      margin-top: 6px;
-    }
-    .traffic-badge.green { background: #166534; color: #86efac; }
-    .traffic-badge.yellow { background: #854d0e; color: #fde047; }
-    .traffic-badge.red { background: #991b1b; color: #fca5a5; }
-
-    /* ========== Location Button ========== */
-    .btn-location {
-      background: #1e40af !important;
-      border-color: #1e40af !important;
-      font-weight: 600;
-    }
-    .btn-location:hover { background: #1e3a8a !important; }
-    .btn-location.active {
-      background: #16a34a !important;
-      border-color: #16a34a !important;
-    }
-
-    /* ========== Location Status Card ========== */
-    .location-card {
-      background: #0f172a;
-      border: 1px solid #334155;
-      border-radius: 12px;
-      padding: 12px 14px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 0.82rem;
-    }
-    .location-card.tracking {
-      border-color: #22c55e;
-    }
-    .location-pulse {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: #3b82f6;
-      flex-shrink: 0;
-      position: relative;
-    }
-    .location-pulse::after {
-      content: '';
-      position: absolute;
-      inset: -4px;
-      border-radius: 50%;
-      border: 2px solid #3b82f6;
-      animation: locPulse 1.5s ease-out infinite;
-    }
-    @keyframes locPulse {
-      0% { transform: scale(1); opacity: 0.6; }
-      100% { transform: scale(1.8); opacity: 0; }
-    }
-    .location-info {
-      flex: 1;
-      min-width: 0;
-    }
-    .location-info .loc-label {
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: #64748b;
-    }
-    .location-info .loc-coords {
-      font-variant-numeric: tabular-nums;
-      color: #e2e8f0;
-      font-size: 0.8rem;
-    }
-    .location-info .loc-accuracy {
-      font-size: 0.7rem;
-      color: #64748b;
-    }
-    .btn-locate-stop {
-      background: none;
-      border: none;
-      color: #64748b;
-      cursor: pointer;
-      font-size: 0.85rem;
-      padding: 2px 6px;
-      border-radius: 4px;
-    }
-    .btn-locate-stop:hover { color: #ef4444; background: #1e293b; }
+    .fade-in { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) both; }
+    .fade-in-delay-1 { animation-delay: 0.05s; }
+    .fade-in-delay-2 { animation-delay: 0.1s; }
+    .fade-in-delay-3 { animation-delay: 0.15s; }
+    .fade-in-delay-4 { animation-delay: 0.2s; }
   </style>
 </head>
 <body>
 
   <!-- Loading Screen -->
   <div class="loading-overlay" id="loading-overlay">
-    <div class="loading-spinner"></div>
-    <p class="loading-text">Loading Google Maps…</p>
+    <div class="loading-content">
+      <div class="loading-logo">&#x1F30D;</div>
+      <div class="loading-spinner"></div>
+      <p class="loading-text">Initializing RouteFlow...</p>
+    </div>
   </div>
 
   <!-- Header -->
   <header>
-    <h1>🗺️ Custom Route Timer</h1>
+    <div class="brand">
+      <div class="brand-icon">&#x1F30D;</div>
+      <span class="brand-text">RouteFlow</span>
+    </div>
     <div class="controls">
-      <select id="travel-mode" title="Travel mode">
-        <option value="DRIVING">🚗 Driving</option>
-        <option value="WALKING">🚶 Walking</option>
-        <option value="BICYCLING">🚲 Bicycling</option>
-        <option value="TRANSIT">🚌 Transit</option>
-      </select>
-      <select id="traffic-model" title="Traffic model (driving only)">
-        <option value="best_guess">Best Guess</option>
-        <option value="pessimistic">Pessimistic</option>
-        <option value="optimistic">Optimistic</option>
-      </select>
-      <button class="btn-location" id="btn-location">📍 My Location</button>
-      <button class="btn-primary" id="btn-reverse">⇄ Reverse</button>
-      <button class="btn-danger" id="btn-clear">✕ Clear</button>
+      <div class="control-group">
+        <select id="travel-mode" title="Travel mode">
+          <option value="DRIVING">&#x1F697; Driving</option>
+          <option value="WALKING">&#x1F6B6; Walking</option>
+          <option value="BICYCLING">&#x1F6B2; Bicycling</option>
+          <option value="TRANSIT">&#x1F68C; Transit</option>
+        </select>
+        <select id="traffic-model" title="Traffic model (driving only)">
+          <option value="best_guess">Best Guess</option>
+          <option value="pessimistic">Pessimistic</option>
+          <option value="optimistic">Optimistic</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <button class="btn-location" id="btn-location">&#x1F4CD; Location</button>
+        <button class="btn-action" id="btn-reverse">&#x21C4; Reverse</button>
+        <button class="btn-danger" id="btn-clear">&#x2715; Clear</button>
+      </div>
       <div class="refresh-badge" id="refresh-badge" style="display:none;">
         <span class="refresh-dot"></span>
-        <span id="refresh-text">Live · updates every 60s</span>
+        <span id="refresh-text">Live</span>
       </div>
     </div>
   </header>
@@ -627,8 +1020,9 @@
     <div class="sidebar">
 
       <!-- Search -->
-      <div class="search-container">
-        <input type="text" id="place-search" placeholder="🔍 Search for a place…">
+      <div class="search-container fade-in">
+        <span class="search-icon">&#x1F50D;</span>
+        <input type="text" id="place-search" placeholder="Search for a place...">
       </div>
 
       <!-- Location Status -->
@@ -636,16 +1030,16 @@
         <div class="location-pulse"></div>
         <div class="location-info">
           <div class="loc-label">Your Location</div>
-          <div class="loc-coords" id="loc-coords">Acquiring…</div>
+          <div class="loc-coords" id="loc-coords">Acquiring...</div>
           <div class="loc-accuracy" id="loc-accuracy"></div>
         </div>
-        <button class="btn-locate-stop" id="btn-locate-stop" title="Stop tracking">✕</button>
+        <button class="btn-locate-stop" id="btn-locate-stop" title="Stop tracking">&#x2715;</button>
       </div>
 
       <!-- Travel Time -->
-      <div class="time-card" id="time-card">
+      <div class="time-card fade-in fade-in-delay-1" id="time-card">
         <div class="time-card-label">Estimated Travel Time</div>
-        <div class="time-remaining" id="time-remaining">—</div>
+        <div class="time-remaining" id="time-remaining">&mdash;</div>
         <div class="time-remaining-sub" id="time-remaining-sub">Add at least 2 points to see travel time</div>
         <div class="time-eta" id="time-eta"></div>
         <div id="traffic-indicator"></div>
@@ -653,41 +1047,47 @@
       </div>
 
       <!-- Stats -->
-      <div class="stats-grid">
+      <div class="stats-grid fade-in fade-in-delay-2">
         <div class="stat-card">
-          <div class="stat-value" id="total-duration">—</div>
+          <div class="stat-icon">&#x23F1;</div>
+          <div class="stat-value" id="total-duration">&mdash;</div>
           <div class="stat-label">Total Time</div>
         </div>
         <div class="stat-card">
-          <div class="stat-value" id="total-distance">—</div>
+          <div class="stat-icon">&#x1F4CF;</div>
+          <div class="stat-value" id="total-distance">&mdash;</div>
           <div class="stat-label">Distance</div>
         </div>
         <div class="stat-card">
-          <div class="stat-value" id="stat-eta">—</div>
-          <div class="stat-label">Arrival (ETA)</div>
+          <div class="stat-icon">&#x1F3C1;</div>
+          <div class="stat-value" id="stat-eta">&mdash;</div>
+          <div class="stat-label">Arrival</div>
         </div>
         <div class="stat-card">
-          <div class="stat-value" id="stat-speed">—</div>
+          <div class="stat-icon">&#x26A1;</div>
+          <div class="stat-value" id="stat-speed">&mdash;</div>
           <div class="stat-label">Avg Speed</div>
         </div>
       </div>
 
       <!-- Leg Breakdown -->
-      <div class="leg-details" id="leg-details" style="display:none;">
+      <div class="leg-details fade-in fade-in-delay-3" id="leg-details" style="display:none;">
         <h3>Route Legs</h3>
         <div id="leg-list"></div>
       </div>
 
       <!-- Waypoints -->
-      <div class="waypoints-section">
-        <h3>Waypoints</h3>
+      <div class="waypoints-section fade-in fade-in-delay-4">
+        <div class="waypoints-header">
+          <h3>Waypoints</h3>
+          <span class="waypoints-count" id="waypoints-count">0 points</span>
+        </div>
         <div id="waypoints-list">
           <div class="instructions">
+            <span class="instruction-icon">&#x1F5FA;</span>
             <strong>Click on the map</strong> to add waypoints.<br>
             Add at least <strong>2 points</strong> to create a route.<br>
-            Drag the route line to adjust the path.<br><br>
-            The <strong>remaining travel time</strong> updates automatically<br>
-            using live traffic data every 60 seconds.
+            Drag the route to adjust the path.
           </div>
         </div>
       </div>
@@ -699,7 +1099,7 @@
 
   <!-- Mobile floating button -->
   <button class="mobile-panel-toggle" id="mobile-toggle">
-    <span>📋</span>
+    <span class="toggle-icon">&#x1F4CB;</span>
     <span class="toggle-time" id="toggle-time">Route Details</span>
   </button>
 
@@ -722,7 +1122,7 @@
     let locationAccuracyCircle = null;
     let isTrackingLocation = false;
 
-    const REFRESH_INTERVAL_MS = 60 * 1000; // Re-query directions every 60s for live traffic
+    const REFRESH_INTERVAL_MS = 60 * 1000;
 
     // ==========================================
     // Load Google Maps API key from server
@@ -739,11 +1139,9 @@
       } catch (e) {
         document.getElementById('loading-overlay').innerHTML = `
           <div class="error-message">
-            <h2>⚠️ Configuration Error</h2>
-            <p style="margin-top:8px;">${e.message}</p>
-            <p style="margin-top:12px;font-size:0.85rem;color:#94a3b8;">
-              Make sure you've set <code>GOOGLE_MAPS_API_KEY</code> in your <code>.env</code> file and restarted the server.
-            </p>
+            <h2>Configuration Error</h2>
+            <p>${e.message}</p>
+            <p>Make sure you've set <code>GOOGLE_MAPS_API_KEY</code> in your <code>.env</code> file and restarted the server.</p>
           </div>`;
       }
     }
@@ -756,11 +1154,20 @@
       script.onerror = () => {
         document.getElementById('loading-overlay').innerHTML = `
           <div class="error-message">
-            <h2>⚠️ Google Maps Failed to Load</h2>
-            <p style="margin-top:8px;">Check your API key and ensure the Maps JavaScript API is enabled.</p>
+            <h2>Google Maps Failed to Load</h2>
+            <p>Check your API key and ensure the Maps JavaScript API is enabled.</p>
           </div>`;
       };
       document.head.appendChild(script);
+    }
+
+    // ==========================================
+    // Traffic model visibility
+    // ==========================================
+    function updateTrafficModelVisibility() {
+      const mode = document.getElementById('travel-mode').value;
+      const trafficSelect = document.getElementById('traffic-model');
+      trafficSelect.style.display = mode === 'DRIVING' ? '' : 'none';
     }
 
     // ==========================================
@@ -775,9 +1182,12 @@
         styles: darkMapStyle(),
         disableDefaultUI: false,
         zoomControl: true,
-        mapTypeControl: true,
+        mapTypeControl: false,
         streetViewControl: false,
-        fullscreenControl: true
+        fullscreenControl: true,
+        zoomControlOptions: {
+          position: google.maps.ControlPosition.RIGHT_CENTER
+        }
       });
 
       directionsService = new google.maps.DirectionsService();
@@ -785,9 +1195,9 @@
         map: map,
         draggable: true,
         polylineOptions: {
-          strokeColor: '#38bdf8',
+          strokeColor: '#6366f1',
           strokeWeight: 5,
-          strokeOpacity: 0.9
+          strokeOpacity: 0.85
         },
         suppressMarkers: false
       });
@@ -825,11 +1235,15 @@
 
       // Travel mode / traffic model change
       document.getElementById('travel-mode').addEventListener('change', () => {
+        updateTrafficModelVisibility();
         if (waypoints.length >= 2) calculateRoute();
       });
       document.getElementById('traffic-model').addEventListener('change', () => {
         if (waypoints.length >= 2) calculateRoute();
       });
+
+      // Set initial traffic model visibility
+      updateTrafficModelVisibility();
     }
 
     // ==========================================
@@ -900,13 +1314,15 @@
 
     function updateWaypointsList() {
       const list = document.getElementById('waypoints-list');
+      const countEl = document.getElementById('waypoints-count');
+      countEl.textContent = waypoints.length + (waypoints.length === 1 ? ' point' : ' points');
+
       if (waypoints.length === 0) {
         list.innerHTML = `<div class="instructions">
+          <span class="instruction-icon">&#x1F5FA;</span>
           <strong>Click on the map</strong> to add waypoints.<br>
           Add at least <strong>2 points</strong> to create a route.<br>
-          Drag the route line to adjust the path.<br><br>
-          The <strong>remaining travel time</strong> updates automatically<br>
-          using live traffic data every 60 seconds.
+          Drag the route to adjust the path.
         </div>`;
         return;
       }
@@ -915,15 +1331,20 @@
       waypoints.forEach((wp, i) => {
         const isFirst = i === 0;
         const isLast = i === waypoints.length - 1 && waypoints.length > 1;
-        const dotClass = isFirst ? 'origin' : (isLast ? 'destination' : 'via');
-        const label = isFirst ? '🟢 Start' : (isLast ? '🔴 End' : `📍 Via ${i}`);
+        const markerClass = isFirst ? 'origin' : (isLast ? 'destination' : 'via');
+        const typeLabel = isFirst ? 'Start' : (isLast ? 'End' : 'Via ' + i);
+        const markerText = isFirst ? 'A' : (isLast ? 'B' : String(i));
 
         const div = document.createElement('div');
         div.className = 'waypoint-item';
+        div.style.animationDelay = (i * 0.05) + 's';
         div.innerHTML = `
-          <span class="waypoint-dot ${dotClass}"></span>
-          <span>${label}: ${wp.name}</span>
-          <button class="waypoint-remove" data-index="${i}" title="Remove">✕</button>
+          <div class="waypoint-marker ${markerClass}">${markerText}</div>
+          <div class="waypoint-content">
+            <div class="waypoint-type">${typeLabel}</div>
+            <div class="waypoint-name">${wp.name}</div>
+          </div>
+          <button class="waypoint-remove" data-index="${i}" title="Remove">&#x2715;</button>
         `;
         list.appendChild(div);
       });
@@ -973,7 +1394,7 @@
       });
     }
 
-    // Silent refresh — re-queries directions for updated traffic, no map flicker
+    // Silent refresh
     function silentRefreshRoute() {
       if (waypoints.length < 2) return;
 
@@ -1027,8 +1448,8 @@
         const div = document.createElement('div');
         div.className = 'leg-item';
         div.innerHTML = `
-          <span>Leg ${i + 1}</span>
-          <span>${dur.text} · ${leg.distance.text}</span>
+          <span class="leg-item-label">Leg ${i + 1}</span>
+          <span class="leg-item-value">${dur.text} &middot; ${leg.distance.text}</span>
         `;
         legList.appendChild(div);
       });
@@ -1037,7 +1458,6 @@
       totalDistanceMeters = totalMeters;
       lastRouteUpdate = Date.now();
 
-      // --- Update all displays ---
       const distKm = (totalMeters / 1000).toFixed(1);
       const avgSpeed = totalSec > 0 ? Math.round((totalMeters / 1000) / (totalSec / 3600)) : 0;
       const eta = new Date(Date.now() + totalSec * 1000);
@@ -1062,7 +1482,6 @@
         trafficEl.innerHTML = '';
       }
 
-      // Update the travel time display
       updateTravelTimeDisplay();
     }
 
@@ -1078,30 +1497,24 @@
       const etaEl = document.getElementById('time-eta');
       const updatedEl = document.getElementById('time-updated');
 
-      // Show the travel time as a readable string
       display.textContent = formatDuration(totalDurationSeconds);
 
-      // ETA
       const eta = new Date(Date.now() + totalDurationSeconds * 1000);
-      etaEl.textContent = '🕐 ETA: ' + formatTime(eta);
+      etaEl.textContent = 'ETA ' + formatTime(eta);
 
-      // Sub text with traffic note
       sub.textContent = 'Based on current traffic';
-      card.classList.remove('short');
       card.classList.add('has-route');
 
-      // Last updated
-      updatedEl.textContent = 'Updated: ' + formatTime(new Date(lastRouteUpdate));
+      updatedEl.textContent = 'Updated ' + formatTime(new Date(lastRouteUpdate));
     }
 
     // ==========================================
-    // Live Refresh (re-queries Google every 60s)
+    // Live Refresh
     // ==========================================
     function restartLiveRefresh() {
       stopLiveRefresh();
       document.getElementById('refresh-badge').style.display = 'flex';
 
-      // Re-query Google for fresh traffic data every 60s
       liveRefreshInterval = setInterval(() => {
         silentRefreshRoute();
       }, REFRESH_INTERVAL_MS);
@@ -1132,51 +1545,47 @@
       totalDistanceMeters = 0;
       routeResult = null;
       lastRouteUpdate = null;
-      document.getElementById('total-duration').textContent = '—';
-      document.getElementById('total-distance').textContent = '—';
-      document.getElementById('stat-eta').textContent = '—';
-      document.getElementById('stat-speed').textContent = '—';
-      document.getElementById('time-remaining').textContent = '—';
+      document.getElementById('total-duration').textContent = '\u2014';
+      document.getElementById('total-distance').textContent = '\u2014';
+      document.getElementById('stat-eta').textContent = '\u2014';
+      document.getElementById('stat-speed').textContent = '\u2014';
+      document.getElementById('time-remaining').textContent = '\u2014';
       document.getElementById('time-remaining-sub').textContent = 'Add at least 2 points to see travel time';
       document.getElementById('time-eta').textContent = '';
       document.getElementById('time-updated').textContent = '';
       document.getElementById('traffic-indicator').innerHTML = '';
       document.getElementById('leg-details').style.display = 'none';
-      document.getElementById('time-card').classList.remove('has-route', 'short');
+      document.getElementById('time-card').classList.remove('has-route');
     }
 
     function darkMapStyle() {
       return [
-        { elementType: "geometry", stylers: [{ color: "#1d2c4d" }] },
-        { elementType: "labels.text.fill", stylers: [{ color: "#8ec3b9" }] },
-        { elementType: "labels.text.stroke", stylers: [{ color: "#1a3646" }] },
-        { featureType: "administrative.country", elementType: "geometry.stroke", stylers: [{ color: "#4b6878" }] },
-        { featureType: "road", elementType: "geometry", stylers: [{ color: "#304a7d" }] },
-        { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#255763" }] },
-        { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#2c6675" }] },
-        { featureType: "road.highway", elementType: "geometry.stroke", stylers: [{ color: "#255763" }] },
-        { featureType: "transit", elementType: "labels.text.fill", stylers: [{ color: "#98a5be" }] },
-        { featureType: "water", elementType: "geometry.fill", stylers: [{ color: "#0e1626" }] },
-        { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#4e6d70" }] }
+        { elementType: "geometry", stylers: [{ color: "#0d0d1a" }] },
+        { elementType: "labels.text.fill", stylers: [{ color: "#6b7280" }] },
+        { elementType: "labels.text.stroke", stylers: [{ color: "#0d0d1a" }] },
+        { featureType: "administrative.country", elementType: "geometry.stroke", stylers: [{ color: "#2d2d4a" }] },
+        { featureType: "road", elementType: "geometry", stylers: [{ color: "#1a1a30" }] },
+        { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#12122a" }] },
+        { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#1e1e3a" }] },
+        { featureType: "road.highway", elementType: "geometry.stroke", stylers: [{ color: "#15152d" }] },
+        { featureType: "road.highway", elementType: "labels.text.fill", stylers: [{ color: "#6366f1" }] },
+        { featureType: "transit", elementType: "labels.text.fill", stylers: [{ color: "#555570" }] },
+        { featureType: "water", elementType: "geometry.fill", stylers: [{ color: "#060610" }] },
+        { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#2d2d4a" }] },
+        { featureType: "poi", elementType: "labels.text.fill", stylers: [{ color: "#555570" }] },
+        { featureType: "poi.park", elementType: "geometry", stylers: [{ color: "#0a1a10" }] }
       ];
     }
 
     // ==========================================
-    // Geolocation (Secure)
+    // Geolocation
     // ==========================================
-    // - Uses browser's built-in Geolocation API
-    // - Always prompts user for permission
-    // - Location data NEVER leaves the browser
-    // - Requires HTTPS in production (enforced by browsers)
-    // ==========================================
-
     function startLocationTracking() {
       if (!navigator.geolocation) {
         alert('Geolocation is not supported by your browser.');
         return;
       }
 
-      // Check if we're on HTTPS or localhost (geolocation requirement)
       const isSecureContext = window.isSecureContext;
       if (!isSecureContext) {
         alert('Location sharing requires HTTPS. It works on localhost for development, but you need HTTPS in production.');
@@ -1186,17 +1595,17 @@
       isTrackingLocation = true;
       const btn = document.getElementById('btn-location');
       btn.classList.add('active');
-      btn.textContent = '📍 Tracking…';
+      btn.innerHTML = '&#x1F4CD; Tracking';
       document.getElementById('location-card').style.display = 'flex';
-      document.getElementById('loc-coords').textContent = 'Acquiring…';
+      document.getElementById('loc-coords').textContent = 'Acquiring...';
 
       locationWatchId = navigator.geolocation.watchPosition(
         onLocationSuccess,
         onLocationError,
         {
           enableHighAccuracy: true,
-          maximumAge: 10000,      // Accept cached position up to 10s old
-          timeout: 15000          // Wait up to 15s for a fix
+          maximumAge: 10000,
+          timeout: 15000
         }
       );
     }
@@ -1208,14 +1617,12 @@
       }
       isTrackingLocation = false;
 
-      // Remove marker & circle
       if (locationMarker) { locationMarker.setMap(null); locationMarker = null; }
       if (locationAccuracyCircle) { locationAccuracyCircle.setMap(null); locationAccuracyCircle = null; }
 
-      // Update UI
       const btn = document.getElementById('btn-location');
       btn.classList.remove('active');
-      btn.textContent = '📍 My Location';
+      btn.innerHTML = '&#x1F4CD; Location';
       document.getElementById('location-card').style.display = 'none';
       document.getElementById('location-card').classList.remove('tracking');
     }
@@ -1236,9 +1643,8 @@
       document.getElementById('loc-coords').textContent =
         `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
       document.getElementById('loc-accuracy').textContent =
-        `Accuracy: ±${Math.round(accuracy)}m`;
+        `Accuracy: \u00B1${Math.round(accuracy)}m`;
 
-      // Create or update the blue dot marker
       if (!locationMarker) {
         locationMarker = new google.maps.Marker({
           position: pos,
@@ -1246,7 +1652,7 @@
           icon: {
             path: google.maps.SymbolPath.CIRCLE,
             scale: 8,
-            fillColor: '#4285F4',
+            fillColor: '#6366f1',
             fillOpacity: 1,
             strokeColor: '#ffffff',
             strokeWeight: 3,
@@ -1255,20 +1661,18 @@
           zIndex: 999
         });
 
-        // Accuracy circle
         locationAccuracyCircle = new google.maps.Circle({
           center: pos,
           radius: accuracy,
           map: map,
-          fillColor: '#4285F4',
-          fillOpacity: 0.1,
-          strokeColor: '#4285F4',
-          strokeOpacity: 0.3,
+          fillColor: '#6366f1',
+          fillOpacity: 0.08,
+          strokeColor: '#6366f1',
+          strokeOpacity: 0.2,
           strokeWeight: 1,
           clickable: false
         });
 
-        // Pan to user location on first fix
         map.panTo(pos);
         map.setZoom(15);
       } else {
@@ -1297,7 +1701,6 @@
       document.getElementById('loc-coords').textContent = 'Error';
       document.getElementById('loc-accuracy').textContent = msg;
 
-      // If permission denied, stop tracking entirely
       if (error.code === error.PERMISSION_DENIED) {
         stopLocationTracking();
         alert(msg);
@@ -1310,7 +1713,7 @@
     loadApp();
 
     // ==========================================
-    // Event Listeners (no inline onclick)
+    // Event Listeners
     // ==========================================
     document.getElementById('btn-reverse').addEventListener('click', () => {
       reverseRoute();
@@ -1324,7 +1727,6 @@
     document.getElementById('btn-locate-stop').addEventListener('click', () => {
       stopLocationTracking();
     });
-    // Delegate clicks on waypoint remove buttons
     document.getElementById('waypoints-list').addEventListener('click', (e) => {
       const btn = e.target.closest('.waypoint-remove');
       if (btn) {
@@ -1346,7 +1748,6 @@
       mobileToggle.style.display = panelOpen ? 'none' : '';
     });
 
-    // Close panel when tapping the map on mobile
     document.getElementById('map').addEventListener('click', () => {
       if (panelOpen && window.innerWidth <= 768) {
         panelOpen = false;
@@ -1355,13 +1756,11 @@
       }
     });
 
-    // Update the floating button text with current remaining time
+    // Update the floating button text with current travel time
     function updateMobileToggleText() {
       const toggleTime = document.getElementById('toggle-time');
       if (totalDurationSeconds > 0 && lastRouteUpdate) {
-        const elapsed = (Date.now() - lastRouteUpdate) / 1000;
-        const remaining = Math.max(0, totalDurationSeconds - elapsed);
-        toggleTime.textContent = formatCountdown(remaining) + ' remaining';
+        toggleTime.textContent = formatDuration(totalDurationSeconds) + ' remaining';
       }
     }
     setInterval(updateMobileToggleText, 1000);
